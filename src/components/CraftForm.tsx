@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type { Craft, CraftInput, CraftPhoto, CraftStatus } from '../types/Craft';
-import { fileToDataUrl } from '../utilities/fileToDataUrl';
+import { useAuth } from '../hooks/useAuth';
+import { uploadCraftPhoto } from '../services/storageService';
 
 interface CraftFormProps {
   initialCraft?: Craft;
@@ -15,6 +16,7 @@ const statusOptions: { label: string; value: CraftStatus }[] = [
 ];
 
 export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProps) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState(initialCraft?.title ?? '');
   const [description, setDescription] = useState(initialCraft?.description ?? '');
   const [materialsText, setMaterialsText] = useState(initialCraft?.materials.join('\n') ?? '');
@@ -24,6 +26,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
   const [photoUrl, setPhotoUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const addPhotoUrl = () => {
     const trimmedUrl = photoUrl.trim();
@@ -39,21 +42,31 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
   };
 
   const handleFileChange = async (files: FileList | null) => {
-    if (!files) {
-      return;
-    }
+    if (!files || !user) return;
 
-    try {
-      const newPhotos = await Promise.all(
-        Array.from(files).map(async (file) => ({
-          id: crypto.randomUUID(),
-          url: await fileToDataUrl(file),
-          alt: file.name,
-        })),
-      );
-      setPhotos((currentPhotos) => [...currentPhotos, ...newPhotos]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not upload photos.');
+    const fileArray = Array.from(files);
+    setUploading(true);
+    setError(null);
+
+    const newPhotos: CraftPhoto[] = [];
+    const failed: string[] = [];
+
+    await Promise.all(
+      fileArray.map(async (file) => {
+        try {
+          const url = await uploadCraftPhoto(file, user.uid);
+          newPhotos.push({ id: crypto.randomUUID(), url, alt: file.name });
+        } catch {
+          failed.push(file.name);
+        }
+      }),
+    );
+
+    setPhotos((prev) => [...prev, ...newPhotos]);
+    setUploading(false);
+
+    if (failed.length > 0) {
+      setError(`Failed to upload: ${failed.join(', ')}`);
     }
   };
 
@@ -134,8 +147,9 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
         </div>
         <label className="mt-3 block">
           <span className="sr-only">Upload photos</span>
-          <input className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-stone-900 file:px-4 file:py-2 file:font-semibold file:text-white" type="file" accept="image/*" multiple onChange={(event) => void handleFileChange(event.target.files)} />
+          <input className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-stone-900 file:px-4 file:py-2 file:font-semibold file:text-white disabled:opacity-50" type="file" accept="image/*" multiple disabled={uploading} onChange={(event) => void handleFileChange(event.target.files)} />
         </label>
+        {uploading ? <p className="mt-2 text-sm text-amber-700">Uploading photos...</p> : null}
         {photos.length > 0 ? (
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {photos.map((photo) => (
@@ -151,7 +165,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
       </section>
 
       {error ? <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
-      <button className="w-full rounded-full bg-stone-900 px-5 py-3 font-bold text-white hover:bg-stone-700 disabled:cursor-not-allowed disabled:bg-stone-400" type="submit" disabled={saving}>
+      <button className="w-full rounded-full bg-stone-900 px-5 py-3 font-bold text-white hover:bg-stone-700 disabled:cursor-not-allowed disabled:bg-stone-400" type="submit" disabled={saving || uploading}>
         {saving ? 'Saving...' : submitLabel}
       </button>
     </form>

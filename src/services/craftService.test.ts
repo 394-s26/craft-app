@@ -31,6 +31,10 @@ vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => 'auth'),
 }));
 
+vi.mock('firebase/storage', () => ({
+  getStorage: vi.fn(() => 'storage'),
+}));
+
 describe('craftService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
