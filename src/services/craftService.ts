@@ -24,7 +24,8 @@ const mapCraft = (id: string, data: DocumentData): Craft => ({
   materials: Array.isArray(data.materials) ? data.materials.map(String) : [],
   photos: Array.isArray(data.photos) ? data.photos : [],
   status: data.status as CraftStatus,
-  sourceUrl: data.sourceUrl ? String(data.sourceUrl) : undefined,
+  sourceUrl: data.sourceUrl ? String(data.sourceUrl) : "",
+  progress: typeof data.progress === 'number' ? data.progress : 0,
   createdAt: data.createdAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),
   updatedAt: data.updatedAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),
 });
@@ -59,6 +60,7 @@ export const createCraft = async (userId: string, input: CraftInput): Promise<st
 };
 
 export const updateCraft = async (craftId: string, input: CraftInput): Promise<void> => {
+  //console.log('Saving to Firebase:', input);
   try {
     await updateDoc(doc(db, 'crafts', craftId), {
       ...input,

@@ -3,12 +3,35 @@ import { CraftForm } from '../components/CraftForm';
 import { StatusBadge } from '../components/StatusBadge';
 import { useCrafts } from '../hooks/useCrafts';
 import type { CraftInput, CraftStatus } from '../types/Craft';
+import { CircularProgress } from '../components/ProgressCircle';
+import { useEffect, useState } from 'react';
 
 export const CraftDetailPage = () => {
   const { craftId } = useParams();
   const navigate = useNavigate();
   const { crafts, editCraft, moveCraft, removeCraft } = useCrafts();
   const craft = crafts.find((currentCraft) => currentCraft.id === craftId);
+  const [progress, setProgress] = useState(0);
+  const [progressReady, setProgressReady] = useState(false);
+  useEffect(() => {
+  if (craft) {
+      setProgress(craft.progress ?? 0);
+      setProgressReady(true); 
+    }
+  }, [craft]);
+
+  useEffect(() => {
+    if (!craft || !progressReady) return; 
+
+    const timeout = setTimeout(() => {
+      void editCraft(craft.id, {
+        ...craft,
+        progress,
+      });
+    }, 150);
+
+    return () => clearTimeout(timeout);
+  }, [progress]);
 
   if (!craftId) {
     return <Navigate to="/" replace />;
@@ -21,6 +44,10 @@ export const CraftDetailPage = () => {
       </main>
     );
   }
+
+  
+
+  
 
   const handleSubmit = async (input: CraftInput) => {
     await editCraft(craft.id, input);
@@ -75,6 +102,16 @@ export const CraftDetailPage = () => {
           </section>
         </div>
         <aside className="space-y-4">
+          <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm flex items-center gap-4">
+            <CircularProgress
+              value={progress}
+              onChange={setProgress}
+            />
+            <div>
+              <p className="font-bold text-stone-900">Progress</p>
+              <p className="text-sm text-stone-500">Drag the ring to update</p>
+            </div>
+          </section>
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-stone-950">Move craft</h2>
             <div className="mt-4 grid gap-2">

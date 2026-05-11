@@ -17,6 +17,7 @@ export interface Craft {
   sourceUrl?: string;
   createdAt: string;
   updatedAt: string;
+  progress?: number;
 }
 
 export interface CraftInput {
@@ -26,4 +27,5 @@ export interface CraftInput {
   photos: CraftPhoto[];
   status: CraftStatus;
   sourceUrl?: string;
+  progress?: number;
 }
