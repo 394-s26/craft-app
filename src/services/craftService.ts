@@ -12,9 +12,48 @@ import {
   type DocumentData,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Craft, CraftInput, CraftStatus } from '../types/Craft';
+import type { Craft, CraftInput, CraftSource, CraftStatus } from '../types/Craft';
 
 const craftsCollection = collection(db, 'crafts');
+
+const mapSources = (data: DocumentData): CraftSource[] => {
+  if (Array.isArray(data.sources)) {
+    return data.sources
+      .map((source): CraftSource | null => {
+        if (source?.type === 'external' && source.url) {
+          return {
+            id: String(source.id ?? crypto.randomUUID()),
+            type: 'external',
+            url: String(source.url),
+            ...(source.label ? { label: String(source.label) } : {}),
+          };
+        }
+
+        if (source?.type === 'craft' && source.craftId) {
+          return {
+            id: String(source.id ?? crypto.randomUUID()),
+            type: 'craft',
+            craftId: String(source.craftId),
+          };
+        }
+
+        return null;
+      })
+      .filter((source): source is CraftSource => source !== null);
+  }
+
+  if (data.sourceUrl) {
+    return [
+      {
+        id: crypto.randomUUID(),
+        type: 'external',
+        url: String(data.sourceUrl),
+      },
+    ];
+  }
+
+  return [];
+};
 
 const mapCraft = (id: string, data: DocumentData): Craft => ({
   id,
@@ -25,6 +64,7 @@ const mapCraft = (id: string, data: DocumentData): Craft => ({
   photos: Array.isArray(data.photos) ? data.photos : [],
   status: data.status as CraftStatus,
   sourceUrl: data.sourceUrl ? String(data.sourceUrl) : undefined,
+  sources: mapSources(data),
   createdAt: data.createdAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),
   updatedAt: data.updatedAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),
 });

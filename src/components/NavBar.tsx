@@ -15,13 +15,16 @@ export const NavBar = () => {
         </NavLink>
         <div className="flex flex-wrap items-center gap-2">
           <NavLink className={linkClass} to="/inspiration">
-            Inspiration
+            Inspo Crafts
           </NavLink>
-          <NavLink className={linkClass} to="/work-in-progress">
+          {/* <NavLink className={linkClass} to="/work-in-progress">
             Work in Progress
           </NavLink>
           <NavLink className={linkClass} to="/completed">
             Completed
+          </NavLink> */}
+          <NavLink className={linkClass} to="/work">
+            My Work
           </NavLink>
           <NavLink className={linkClass} to="/new">
             New Craft

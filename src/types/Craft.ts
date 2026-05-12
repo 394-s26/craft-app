@@ -6,6 +6,19 @@ export interface CraftPhoto {
   alt: string;
 }
 
+export type CraftSource =
+  | {
+      id: string;
+      type: 'external';
+      url: string;
+      label?: string;
+    }
+  | {
+      id: string;
+      type: 'craft';
+      craftId: string;
+    };
+
 export interface Craft {
   id: string;
   userId: string;
@@ -15,6 +28,7 @@ export interface Craft {
   photos: CraftPhoto[];
   status: CraftStatus;
   sourceUrl?: string;
+  sources: CraftSource[];
   createdAt: string;
   updatedAt: string;
 }
@@ -26,4 +40,5 @@ export interface CraftInput {
   photos: CraftPhoto[];
   status: CraftStatus;
   sourceUrl?: string;
+  sources: CraftSource[];
 }

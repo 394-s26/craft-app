@@ -3,14 +3,14 @@ import { useCrafts } from '../hooks/useCrafts';
 import type { CraftStatus } from '../types/Craft';
 
 interface FolderPageProps {
-  status: CraftStatus;
+  status: CraftStatus[];
   title: string;
   description: string;
 }
 
 export const FolderPage = ({ status, title, description }: FolderPageProps) => {
   const { crafts, loading, error } = useCrafts();
-  const filteredCrafts = crafts.filter((craft) => craft.status === status);
+  const filteredCrafts = crafts.filter((craft) => status.includes(craft.status));
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">

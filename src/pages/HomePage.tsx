@@ -23,12 +23,12 @@ export const HomePage = () => {
           <h2 className="mt-2 font-bold text-stone-900">Inspiration crafts</h2>
           <p className="mt-2 text-sm text-stone-600">Save ideas from Instagram, Etsy, patterns, blogs, or your own sketches.</p>
         </Link>
-        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work-in-progress">
+        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work">
           <p className="text-4xl font-black text-stone-950">{progressCount}</p>
           <h2 className="mt-2 font-bold text-stone-900">Works in progress</h2>
           <p className="mt-2 text-sm text-stone-600">Track current project photos, descriptions, and materials.</p>
         </Link>
-        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/completed">
+        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work">
           <p className="text-4xl font-black text-stone-950">{completedCount}</p>
           <h2 className="mt-2 font-bold text-stone-900">Completed crafts</h2>
           <p className="mt-2 text-sm text-stone-600">Keep a gallery of everything you have finished.</p>

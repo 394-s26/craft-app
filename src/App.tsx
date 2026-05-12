@@ -17,9 +17,10 @@ export const App = () => (
             <NavBar />
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/inspiration" element={<FolderPage status="inspiration" title="Inspiration" description="A private folder for ideas from Instagram, Etsy, patterns, blogs, photos, or anything else you want to make later." />} />
-              <Route path="/work-in-progress" element={<FolderPage status="work-in-progress" title="Work in Progress" description="All active projects with photos, descriptions, and materials you can update as you make progress." />} />
-              <Route path="/completed" element={<FolderPage status="completed" title="Completed" description="A finished gallery of crafts you have completed and want to remember." />} />
+              <Route path="/inspiration" element={<FolderPage status={["inspiration"]} title="Inspiration" description="A private folder for ideas from Instagram, Etsy, patterns, blogs, photos, or anything else you want to make later." />} />
+              {/* <Route path="/work-in-progress" element={<FolderPage status="work-in-progress" title="Work in Progress" description="All active projects with photos, descriptions, and materials you can update as you make progress." />} />
+              <Route path="/completed" element={<FolderPage status="completed" title="Completed" description="A finished gallery of crafts you have completed and want to remember." />} /> */}
+              <Route path="/work" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" description="All your projects with photos, descriptions, and materials you can update as you make progress."/> } />
               <Route path="/new" element={<NewCraftPage />} />
               <Route path="/crafts/:craftId" element={<CraftDetailPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
