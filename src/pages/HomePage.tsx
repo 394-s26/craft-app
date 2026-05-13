@@ -30,7 +30,7 @@ export const HomePage = () => {
       
       <section className="mt-10 rounded-[2rem] bg-stone-900 p-8 text-white md:p-12">
         <p className="text-sm font-bold uppercase tracking-[0.25em] text-amber-200">Crafter dashboard</p>
-        <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight md:text-6xl">An app to track you crafts and inspirations.</h1>
+        <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight md:text-6xl">An app to track your crafts and inspirations.</h1>
         <Link className="mt-8 inline-flex rounded-full bg-amber-500 px-6 py-3 font-bold text-stone-950 hover:bg-amber-400" to="/new">
           Create a craft
         </Link>
