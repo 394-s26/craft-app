@@ -31,10 +31,18 @@ export const CraftDetailPage = () => {
   useEffect(() => {
     if (!craft || !progressReady) return;
 
+    const nextStatus: CraftStatus =
+      progress >= 100
+        ? 'completed'
+        : craft.status === 'completed'
+          ? 'work-in-progress'
+          : craft.status;
+
     const timeout = setTimeout(() => {
       void editCraft(craft.id, {
         ...craft,
         progress,
+        status: nextStatus,
       });
     }, 150);
 
@@ -222,27 +230,43 @@ export const CraftDetailPage = () => {
         </div>
 
         <aside className="space-y-4">
+        {craft.status !== 'inspiration' ? (
           <section className="flex items-center gap-4 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <CircularProgress value={progress} onChange={setProgress} />
             <div>
               <p className="font-bold text-stone-900">Progress</p>
-              <p className="text-sm text-stone-500">Drag the ring to update</p>
+              <p className="text-sm text-stone-500">
+                {progress >= 100
+                  ? 'This craft is completed'
+                  : 'Drag the ring to update'}
+              </p>
             </div>
           </section>
+        ) : null}
 
-          <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+        <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-stone-950">Move craft</h2>
             <div className="mt-4 grid gap-2">
-              <button className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100" onClick={() => void handleMove('inspiration')}>
-                Move to Inspiration
-              </button>
-              <button className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100" onClick={() => void handleMove('work-in-progress')}>
-                Move to Work in Progress
-              </button>
-              <button className="rounded-full bg-stone-900 px-4 py-2 font-semibold text-white hover:bg-stone-700" onClick={() => void handleMove('completed')}>
-                Mark Completed
-              </button>
-              <button className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50" onClick={() => void handleDelete()}>
+              {craft.status === 'inspiration' ? (
+                <button
+                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
+                  onClick={() => void handleMove('work-in-progress')}
+                >
+                  Move to Work In Progress
+                </button>
+              ) : (
+                <button
+                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
+                  onClick={() => void handleMove('inspiration')}
+                >
+                  Move to Inspiration
+                </button>
+              )}
+
+              <button
+                className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
+                onClick={() => void handleDelete()}
+              >
                 Delete Craft
               </button>
             </div>

@@ -161,15 +161,42 @@ export const CircularProgress = ({
         style={{ transition: 'stroke 0.3s, stroke-dashoffset 0.05s' }}
       />
 
-      {/* Knob */}
-      <circle
-        cx={knobX} cy={knobY}
-        r={strokeWidth * 0.75}
-        fill={color}
-        stroke="white"
-        strokeWidth={2}
-        style={{ transition: 'fill 0.3s' }}
-      />
+            {/* Knob / Completed Check */}
+      {safe >= 100 ? (
+        <g>
+          <circle
+            cx={cx}
+            cy={cy}
+            r={strokeWidth * 1.1}
+            fill="none"
+            stroke="white"
+            strokeWidth={2}
+          />
+
+          <path
+            d={`
+              M ${cx - 9} ${cy}
+              L ${cx - 3} ${cy + 7}
+              L ${cx + 9} ${cy - 8}
+            `}
+            fill="white"
+            stroke="#168317"
+            strokeWidth={5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+      ) : (
+        <circle
+          cx={knobX}
+          cy={knobY}
+          r={strokeWidth * 0.75}
+          fill={color}
+          stroke="white"
+          strokeWidth={2}
+          style={{ transition: 'fill 0.3s' }}
+        />
+      )}
 
       {/* Percentage label 
       <text
