@@ -10,6 +10,11 @@ interface CraftFormProps {
   onSubmit: (input: CraftInput) => Promise<void>;
 }
 
+const materialOptions = [
+  'Cotton', 'Linen', 'Wool', 'Silk', 'Polyester', 'Denim',
+  'Leather', 'Knit', 'Fleece', 'Chiffon', 'Velvet', 'Satin',
+];
+
 const statusOptions: { label: string; value: CraftStatus }[] = [
   { label: 'Inspiration', value: 'inspiration' },
   { label: 'Work in Progress', value: 'work-in-progress' },
@@ -22,7 +27,23 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
   const [title, setTitle] = useState(initialCraft?.title ?? '');
   const [description, setDescription] = useState(initialCraft?.description ?? '');
-  const [materialsText, setMaterialsText] = useState(initialCraft?.materials.join('\n') ?? '');
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>(initialCraft?.materials ?? []);
+
+  const [customMaterial, setCustomMaterial] = useState('');
+
+  const toggleMaterial = (material: string) => {
+    setSelectedMaterials((prev) =>
+      prev.includes(material) ? prev.filter((m) => m !== material) : [...prev, material],
+    );
+  };
+
+  const addCustomMaterial = () => {
+    const trimmed = customMaterial.trim();
+    if (trimmed && !selectedMaterials.includes(trimmed)) {
+      setSelectedMaterials((prev) => [...prev, trimmed]);
+    }
+    setCustomMaterial('');
+  };
   const [sources, setSources] = useState<CraftSource[]>(
     initialCraft?.sources?.length
       ? initialCraft.sources
@@ -153,7 +174,8 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
     event.preventDefault();
     setError(null);
 
-    if (!title.trim() || !description.trim()) {
+
+    if (!title.trim()) {
       setError('Title and description are required.');
       return;
     }
@@ -166,10 +188,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
       await onSubmit({
         title: title.trim(),
         description: description.trim(),
-        materials: materialsText
-          .split('\n')
-          .map((material) => material.trim())
-          .filter(Boolean),
+        materials: selectedMaterials,
         photos,
         status,
         sources: nextSources,
@@ -191,13 +210,55 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
       <label className="block">
         <span className="text-sm font-bold text-stone-700">Description / vision</span>
-        <textarea className="mt-2 min-h-36 w-full rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What are you making? What look are you going for?" />
+        <textarea className="mt-2 min-h-36 w-full rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700" value={description} 
+        onChange={(event) => setDescription(event.target.value)} placeholder="What are you making? What look are you going for?" />
       </label>
 
-      <label className="block">
-        <span className="text-sm font-bold text-stone-700">Materials list</span>
-        <textarea className="mt-2 min-h-28 w-full rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700" value={materialsText} onChange={(event) => setMaterialsText(event.target.value)} placeholder="One material per line" />
-      </label>
+      <div className="block">
+        <span className="text-sm font-bold text-stone-700">Materials</span>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {materialOptions.map((material) => (
+            <button
+              key={material}
+              type="button"
+              onClick={() => toggleMaterial(material)}
+              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+                selectedMaterials.includes(material)
+                  ? 'border-amber-700 bg-amber-700 text-white'
+                  : 'border-stone-300 bg-white text-stone-700 hover:border-amber-700'
+              }`}
+            >
+              {material}
+            </button>
+          ))}
+          {selectedMaterials.filter((m) => !materialOptions.includes(m)).map((material) => (
+            <button
+              key={material}
+              type="button"
+              onClick={() => toggleMaterial(material)}
+              className="rounded-full border border-amber-700 bg-amber-700 px-4 py-1.5 text-sm text-white transition-colors"
+            >
+              {material} ×
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 flex gap-2">
+          <input
+            className="flex-1 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-amber-700"
+            placeholder="Other material..."
+            value={customMaterial}
+            onChange={(e) => setCustomMaterial(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomMaterial(); } }}
+          />
+          <button
+            type="button"
+            onClick={addCustomMaterial}
+            className="rounded-2xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:border-amber-700"
+          >
+            Add
+          </button>
+        </div>
+      </div>
 
       <label className="block">
         <span className="text-sm font-bold text-stone-700">Folder</span>
