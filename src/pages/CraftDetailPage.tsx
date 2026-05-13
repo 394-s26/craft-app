@@ -230,6 +230,7 @@ export const CraftDetailPage = () => {
         </div>
 
         <aside className="space-y-4">
+        {craft.status !== 'inspiration' ? (
           <section className="flex items-center gap-4 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <CircularProgress value={progress} onChange={setProgress} />
             <div>
@@ -241,16 +242,26 @@ export const CraftDetailPage = () => {
               </p>
             </div>
           </section>
+        ) : null}
 
-          <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+        <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-stone-950">Move craft</h2>
             <div className="mt-4 grid gap-2">
-              <button
-                className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
-                onClick={() => void handleMove('inspiration')}
-              >
-                Move to Inspiration
-              </button>
+              {craft.status === 'inspiration' ? (
+                <button
+                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
+                  onClick={() => void handleMove('work-in-progress')}
+                >
+                  Move to Work In Progress
+                </button>
+              ) : (
+                <button
+                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
+                  onClick={() => void handleMove('inspiration')}
+                >
+                  Move to Inspiration
+                </button>
+              )}
 
               <button
                 className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
