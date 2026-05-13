@@ -153,7 +153,8 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
     event.preventDefault();
     setError(null);
 
-    if (!title.trim() || !description.trim()) {
+
+    if (!title.trim()) {
       setError('Title and description are required.');
       return;
     }
