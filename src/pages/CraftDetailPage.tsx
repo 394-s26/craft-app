@@ -99,7 +99,9 @@ export const CraftDetailPage = () => {
         ? [{ id: 'source-url', type: 'external' as const, url: craft.sourceUrl }]
         : [];
 
-  const currentPhoto = craft.photos[currentPhotoIndex];
+  // const currentPhoto = craft.photos[currentPhotoIndex];
+  const photosPerLine = 3;
+  const currentPhotos = craft.photos.slice(currentPhotoIndex, currentPhotoIndex + photosPerLine);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -129,16 +131,21 @@ export const CraftDetailPage = () => {
           <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
             <h2 className="mb-4 text-2xl font-bold text-stone-950">Photos</h2>
 
-            {currentPhoto ? (
+            {currentPhotos ? (
+
               <div>
                 <div className="relative overflow-hidden rounded-3xl bg-stone-100">
-                  <img
-                    className="h-[34rem] w-full object-contain"
-                    src={currentPhoto.url}
-                    alt={currentPhoto.alt}
-                  />
+                  {
+                    currentPhotos.map((photo) => (
+                      <img
+                        className="h-[34rem] w-full object-contain"
+                        src={photo.url}
+                        alt={photo.alt}
+                      />
+                    ))
+                  }
 
-                  {craft.photos.length > 1 ? (
+                  {craft.photos.length > photosPerLine ? (
                     <>
                       <button
                         className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
