@@ -176,7 +176,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
 
     if (!title.trim()) {
-      setError('Title and description are required.');
+      setError('Please add a title.');
       return;
     }
 

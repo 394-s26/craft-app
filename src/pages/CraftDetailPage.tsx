@@ -78,15 +78,21 @@ export const CraftDetailPage = () => {
     navigate('/');
   };
 
+  const photosPerLine = 3;
+  const lastPhotoViewIndex = (() => {
+    const remainder = craft.photos.length % photosPerLine;
+    return craft.photos.length - (remainder === 0 ? photosPerLine : remainder)
+  })();
+
   const goToPreviousPhoto = () => {
     setCurrentPhotoIndex((currentIndex) =>
-      currentIndex === 0 ? craft.photos.length - 1 : currentIndex - 1,
+      currentIndex === 0 ? lastPhotoViewIndex : currentIndex - photosPerLine,
     );
   };
 
   const goToNextPhoto = () => {
     setCurrentPhotoIndex((currentIndex) =>
-      currentIndex === craft.photos.length - 1 ? 0 : currentIndex + 1,
+      currentIndex === lastPhotoViewIndex ? 0 : currentIndex + photosPerLine,
     );
   };
 
@@ -99,7 +105,7 @@ export const CraftDetailPage = () => {
         ? [{ id: 'source-url', type: 'external' as const, url: craft.sourceUrl }]
         : [];
 
-  const currentPhoto = craft.photos[currentPhotoIndex];
+  const currentPhotos = craft.photos.slice(currentPhotoIndex, currentPhotoIndex + photosPerLine);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -132,6 +138,61 @@ export const CraftDetailPage = () => {
           </div>
 
           <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">{craft.description}</p>
+
+          <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
+            <h2 className="mb-4 text-2xl font-bold text-stone-950">Photos</h2>
+
+            {currentPhotos ? (
+
+              <div>
+                <div className="relative overflow-hidden rounded-3xl bg-stone-100">
+                  <div className="flex justify-around ml-10 mr-10">
+                    {
+                      currentPhotos.map((photo) => (
+                        <img
+                          key={`images-${photo.url}`}
+                          className="h-[34rem] max-h-50 m-1 max-w-1/3 object-contain"
+                          src={photo.url}
+                          alt={photo.alt}
+                        />
+                      ))
+                    }
+                  </div>
+
+                  {craft.photos.length > photosPerLine ? (
+                    <>
+                      <button
+                        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
+                        type="button"
+                        onClick={goToPreviousPhoto}
+                        aria-label="Previous photo"
+                      >
+                        ←
+                      </button>
+
+                      <button
+                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
+                        type="button"
+                        onClick={goToNextPhoto}
+                        aria-label="Next photo"
+                      >
+                        →
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+
+                {craft.photos.length > 1 ? (
+                  <p className="mt-3 text-center text-sm font-semibold text-stone-500">
+                    {currentPhotoIndex + 1} of {craft.photos.length}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <p className="text-stone-600">No photos added yet.</p>
+            )}
+          </section>
+        </div>
 
           {sources.length > 0 ? (
             <section className="mt-6 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
@@ -188,53 +249,6 @@ export const CraftDetailPage = () => {
               <p className="mt-3 text-stone-600">No materials added yet.</p>
             )}
           </section>
-
-          <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-4 text-2xl font-bold text-stone-950">Photos</h2>
-
-            {currentPhoto ? (
-              <div>
-                <div className="relative overflow-hidden rounded-3xl bg-stone-100">
-                  <img
-                    className="h-[34rem] w-full object-contain"
-                    src={currentPhoto.url}
-                    alt={currentPhoto.alt}
-                  />
-
-                  {craft.photos.length > 1 ? (
-                    <>
-                      <button
-                        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
-                        type="button"
-                        onClick={goToPreviousPhoto}
-                        aria-label="Previous photo"
-                      >
-                        ←
-                      </button>
-
-                      <button
-                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
-                        type="button"
-                        onClick={goToNextPhoto}
-                        aria-label="Next photo"
-                      >
-                        →
-                      </button>
-                    </>
-                  ) : null}
-                </div>
-
-                {craft.photos.length > 1 ? (
-                  <p className="mt-3 text-center text-sm font-semibold text-stone-500">
-                    {currentPhotoIndex + 1} of {craft.photos.length}
-                  </p>
-                ) : null}
-              </div>
-            ) : (
-              <p className="text-stone-600">No photos added yet.</p>
-            )}
-          </section>
-        </div>
 
         <aside className="space-y-4">
         
