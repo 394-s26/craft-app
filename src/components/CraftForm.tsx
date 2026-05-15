@@ -10,10 +10,21 @@ interface CraftFormProps {
   onSubmit: (input: CraftInput) => Promise<void>;
 }
 
-const materialOptions = [
-  'Cotton', 'Linen', 'Wool', 'Silk', 'Polyester', 'Denim',
-  'Leather', 'Knit', 'Fleece', 'Chiffon', 'Velvet', 'Satin',
-];
+interface MaterialEntry {
+  id: string;
+  name: string;
+  quantity: string;
+}
+
+const parseMaterial = (s: string): MaterialEntry => {
+  const match = s.match(/^(.+)\s+\((.+)\)$/);
+  return match
+    ? { id: crypto.randomUUID(), name: match[1], quantity: match[2] }
+    : { id: crypto.randomUUID(), name: s, quantity: '' };
+};
+
+const serializeMaterial = (m: MaterialEntry): string =>
+  m.quantity.trim() ? `${m.name.trim()} (${m.quantity.trim()})` : m.name.trim();
 
 const statusOptions: { label: string; value: CraftStatus }[] = [
   { label: 'Inspiration', value: 'inspiration' },
@@ -27,22 +38,22 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
   const [title, setTitle] = useState(initialCraft?.title ?? '');
   const [description, setDescription] = useState(initialCraft?.description ?? '');
-  const [selectedMaterials, setSelectedMaterials] = useState<string[]>(initialCraft?.materials ?? []);
+  const [materials, setMaterials] = useState<MaterialEntry[]>(
+    (initialCraft?.materials ?? []).map(parseMaterial),
+  );
+  const [newMaterialName, setNewMaterialName] = useState('');
+  const [newMaterialQuantity, setNewMaterialQuantity] = useState('');
 
-  const [customMaterial, setCustomMaterial] = useState('');
-
-  const toggleMaterial = (material: string) => {
-    setSelectedMaterials((prev) =>
-      prev.includes(material) ? prev.filter((m) => m !== material) : [...prev, material],
-    );
+  const addMaterial = () => {
+    const trimmedName = newMaterialName.trim();
+    if (!trimmedName) return;
+    setMaterials((prev) => [...prev, { id: crypto.randomUUID(), name: trimmedName, quantity: newMaterialQuantity.trim() }]);
+    setNewMaterialName('');
+    setNewMaterialQuantity('');
   };
 
-  const addCustomMaterial = () => {
-    const trimmed = customMaterial.trim();
-    if (trimmed && !selectedMaterials.includes(trimmed)) {
-      setSelectedMaterials((prev) => [...prev, trimmed]);
-    }
-    setCustomMaterial('');
+  const removeMaterial = (id: string) => {
+    setMaterials((prev) => prev.filter((m) => m.id !== id));
   };
   const [sources, setSources] = useState<CraftSource[]>(
     initialCraft?.sources?.length
@@ -188,7 +199,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
       await onSubmit({
         title: title.trim(),
         description: description.trim(),
-        materials: selectedMaterials,
+        materials: materials.map(serializeMaterial),
         photos,
         status,
         sources: nextSources,
@@ -216,43 +227,35 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
       <div className="block">
         <span className="text-sm font-bold text-stone-700">Materials</span>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {materialOptions.map((material) => (
-            <button
-              key={material}
-              type="button"
-              onClick={() => toggleMaterial(material)}
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-                selectedMaterials.includes(material)
-                  ? 'border-amber-700 bg-amber-700 text-white'
-                  : 'border-stone-300 bg-white text-stone-700 hover:border-amber-700'
-              }`}
-            >
-              {material}
-            </button>
-          ))}
-          {selectedMaterials.filter((m) => !materialOptions.includes(m)).map((material) => (
-            <button
-              key={material}
-              type="button"
-              onClick={() => toggleMaterial(material)}
-              className="rounded-full border border-amber-700 bg-amber-700 px-4 py-1.5 text-sm text-white transition-colors"
-            >
-              {material} ×
-            </button>
-          ))}
-        </div>
+        {materials.length > 0 && (
+          <ul className="mt-2 space-y-2">
+            {materials.map((m) => (
+              <li key={m.id} className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm">
+                <span className="flex-1 text-stone-800">{m.name}</span>
+                {m.quantity && <span className="text-stone-500">{m.quantity}</span>}
+                <button type="button" onClick={() => removeMaterial(m.id)} className="text-stone-400 hover:text-red-600">×</button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="mt-3 flex gap-2">
           <input
             className="flex-1 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-amber-700"
-            placeholder="Other material..."
-            value={customMaterial}
-            onChange={(e) => setCustomMaterial(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomMaterial(); } }}
+            placeholder="Material name"
+            value={newMaterialName}
+            onChange={(e) => setNewMaterialName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addMaterial(); } }}
+          />
+          <input
+            className="w-32 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-amber-700"
+            placeholder="Quantity"
+            value={newMaterialQuantity}
+            onChange={(e) => setNewMaterialQuantity(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addMaterial(); } }}
           />
           <button
             type="button"
-            onClick={addCustomMaterial}
+            onClick={addMaterial}
             className="rounded-2xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:border-amber-700"
           >
             Add
