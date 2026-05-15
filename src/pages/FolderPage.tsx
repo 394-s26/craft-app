@@ -25,9 +25,12 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
   },
 };
 
+type VisibilityFilter = 'all' | 'public' | 'private';
+
 export const FolderPage = ({ status, title, description }: FolderPageProps) => {
   const { crafts, loading, error } = useCrafts();
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(status);
+  const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
 
   const toggleFilter = (s: CraftStatus) => {
     setActiveFilters((prev) =>
@@ -37,7 +40,13 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
     );
   };
 
-  const filteredCrafts = crafts.filter((craft) => activeFilters.includes(craft.status));
+  const filteredCrafts = crafts
+    .filter((craft) => activeFilters.includes(craft.status))
+    .filter((craft) => {
+      if (visibilityFilter === 'public') return craft.isPublic;
+      if (visibilityFilter === 'private') return !craft.isPublic;
+      return true;
+    });
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -46,21 +55,41 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
         <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
       </section>
 
-      {status.length > 1 && (
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-sm font-bold text-stone-600">Filter:</span>
-          {status.map((s) => (
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        {status.length > 1 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-bold text-stone-600">Status:</span>
+            {status.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => toggleFilter(s)}
+                className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive}`}
+              >
+                {formatStatus(s)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-stone-600">Visibility:</span>
+          {(['all', 'public', 'private'] as VisibilityFilter[]).map((v) => (
             <button
-              key={s}
+              key={v}
               type="button"
-              onClick={() => toggleFilter(s)}
-              className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive}`}
+              onClick={() => setVisibilityFilter(v)}
+              className={`rounded-full border px-4 py-1.5 text-sm font-semibold capitalize transition-colors ${
+                visibilityFilter === v
+                  ? 'border-stone-700 bg-stone-700 text-white'
+                  : 'border-stone-300 bg-white text-stone-700 hover:border-stone-700'
+              }`}
             >
-              {formatStatus(s)}
+              {v}
             </button>
           ))}
         </div>
-      )}
+      </div>
 
       {loading ? <p className="text-stone-600">Loading crafts...</p> : null}
       {error ? <p className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
