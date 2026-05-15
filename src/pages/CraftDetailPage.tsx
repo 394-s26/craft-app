@@ -110,8 +110,15 @@ export const CraftDetailPage = () => {
       <section className="mt-6 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
         <div>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-4xl font-black tracking-tight text-stone-950">{craft.title}</h1>
+            <div className="flex flex-wrap items-center gap-4">
+              <h1 className="text-4xl font-black tracking-tight text-stone-950">
+                {craft.title}
+              </h1>
+
+              {craft.status !== 'inspiration' ? (
+                <CircularProgress value={progress} onChange={setProgress} />
+              ) : null}
+
               <StatusBadge status={craft.status} />
             </div>
 
@@ -230,20 +237,7 @@ export const CraftDetailPage = () => {
         </div>
 
         <aside className="space-y-4">
-        {craft.status !== 'inspiration' ? (
-          <section className="flex items-center gap-4 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <CircularProgress value={progress} onChange={setProgress} />
-            <div>
-              <p className="font-bold text-stone-900">Progress</p>
-              <p className="text-sm text-stone-500">
-                {progress >= 100
-                  ? 'This craft is completed'
-                  : 'Drag the ring to update'}
-              </p>
-            </div>
-          </section>
-        ) : null}
-
+        
         <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-stone-950">Move craft</h2>
             <div className="mt-4 grid gap-2">
