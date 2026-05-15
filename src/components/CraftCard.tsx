@@ -20,7 +20,12 @@ export const CraftCard = ({ craft }: CraftCardProps) => {
           <StatusBadge status={craft.status} />
         </div>
         <p className="line-clamp-3 text-sm leading-6 text-stone-600">{craft.description}</p>
-        <p className="text-sm font-semibold text-stone-700">{craft.materials.length} material{craft.materials.length === 1 ? '' : 's'}</p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-stone-700">{craft.materials.length} material{craft.materials.length === 1 ? '' : 's'}</p>
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${craft.isPublic ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}`}>
+            {craft.isPublic ? 'Public' : 'Private'}
+          </span>
+        </div>
       </div>
     </Link>
   );

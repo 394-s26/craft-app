@@ -32,6 +32,7 @@ export interface Craft {
   createdAt: string;
   updatedAt: string;
   progress?: number;
+  isPublic: boolean;
 }
 
 export interface CraftInput {
@@ -43,4 +44,5 @@ export interface CraftInput {
   sourceUrl?: string;
   sources: CraftSource[];
   progress?: number;
+  isPublic: boolean;
 }

@@ -43,6 +43,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
   );
   const [newMaterialName, setNewMaterialName] = useState('');
   const [newMaterialQuantity, setNewMaterialQuantity] = useState('');
+  const [isPublic, setIsPublic] = useState(initialCraft?.isPublic ?? false);
 
   const addMaterial = () => {
     const trimmedName = newMaterialName.trim();
@@ -200,6 +201,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
         title: title.trim(),
         description: description.trim(),
         materials: materials.map(serializeMaterial),
+        isPublic,
         photos,
         status,
         sources: nextSources,
@@ -366,6 +368,20 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
           </div>
         ) : null}
       </section>
+
+      <div className="flex items-center justify-between rounded-2xl border border-stone-200 px-4 py-3">
+        <div>
+          <span className="text-sm font-bold text-stone-700">Visibility</span>
+          <p className="text-xs text-stone-500">{isPublic ? 'Anyone can view this craft' : 'Only you can see this craft'}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsPublic((prev) => !prev)}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPublic ? 'bg-amber-700' : 'bg-stone-300'}`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isPublic ? 'translate-x-6' : 'translate-x-1'}`} />
+        </button>
+      </div>
 
       {error ? <p className="rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
       <button className="w-full rounded-full bg-stone-900 px-5 py-3 font-bold text-white hover:bg-stone-700 disabled:cursor-not-allowed disabled:bg-stone-400" type="submit" disabled={saving || uploading}>
