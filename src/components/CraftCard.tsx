@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Craft } from '../types/Craft';
-import { StatusBadge } from './StatusBadge';
+import { CircularProgress } from '../components/ProgressCircle';
 
 interface CraftCardProps {
   craft: Craft;
@@ -17,7 +17,9 @@ export const CraftCard = ({ craft }: CraftCardProps) => {
       <div className="space-y-3 p-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-stone-950 group-hover:text-amber-800">{craft.title}</h2>
-          <StatusBadge status={craft.status} />
+          {craft.status !== 'inspiration' ? (
+            <CircularProgress value={craft.progress} onChange={() =>{}} size={50} strokeWidth={4}/>
+          ) : null}
         </div>
         <p className="line-clamp-3 text-sm leading-6 text-stone-600">{craft.description}</p>
         <div className="flex items-center justify-between">
