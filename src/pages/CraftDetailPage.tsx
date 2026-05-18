@@ -121,150 +121,148 @@ export const CraftDetailPage = () => {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <Link className="text-sm font-bold text-amber-800 hover:text-amber-950" to={`/${folderRoute}`}>
-        ← Back to folder
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link className="text-sm font-bold text-amber-800 hover:text-amber-950" to={`/${folderRoute}`}>
+          ← Back to folder
+        </Link>
+      </div>
 
-      <section className="mt-6 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-4">
-              <h1 className="text-4xl font-black tracking-tight text-stone-950">
-                {craft.title}
-              </h1>
+      <section className="mt-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <h1 className="text-4xl font-black tracking-tight text-stone-950">
+            {craft.title}
+          </h1>
 
-              {craft.status !== 'inspiration' ? (
-                <CircularProgress value={progress} onChange={setProgress} />
-              ) : null}
-
-              <StatusBadge status={craft.status} />
-            </div>
-
-            <button
-              className="rounded-full bg-stone-900 px-5 py-2 font-bold text-white hover:bg-stone-700"
-              type="button"
-              onClick={() => setEditingCraft(true)}
-            >
-              Edit craft
-            </button>
-          </div>
-
-          <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">{craft.description}</p>
-
-          <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-4 text-2xl font-bold text-stone-950">Photos</h2>
-
-            {currentPhotos ? (
-
-              <div>
-                <div className="relative overflow-hidden rounded-3xl bg-stone-100">
-                  <div className="flex justify-around ml-10 mr-10">
-                    {
-                      currentPhotos.map((photo) => (
-                        <img
-                          key={`images-${photo.url}`}
-                          className="h-[34rem] max-h-50 m-1 max-w-1/3 object-contain"
-                          src={photo.url}
-                          alt={photo.alt}
-                        />
-                      ))
-                    }
-                  </div>
-
-                  {craft.photos.length > photosPerLine ? (
-                    <>
-                      <button
-                        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
-                        type="button"
-                        onClick={goToPreviousPhoto}
-                        aria-label="Previous photo"
-                      >
-                        ←
-                      </button>
-
-                      <button
-                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
-                        type="button"
-                        onClick={goToNextPhoto}
-                        aria-label="Next photo"
-                      >
-                        →
-                      </button>
-                    </>
-                  ) : null}
-                </div>
-
-                {craft.photos.length > 1 ? (
-                  <p className="mt-3 text-center text-sm font-semibold text-stone-500">
-                    {currentPhotoIndex + 1} of {craft.photos.length}
-                  </p>
-                ) : null}
-              </div>
-            ) : (
-              <p className="text-stone-600">No photos added yet.</p>
-            )}
-          </section>
-        </div>
-
-          {sources.length > 0 ? (
-            <section className="mt-6 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-              <h2 className="text-2xl font-bold text-stone-950">Inspiration sources</h2>
-
-              <div className="mt-4 grid gap-3">
-                {sources.map((source) => {
-                  if (source.type === 'external') {
-                    return (
-                      <a
-                        className="rounded-2xl bg-amber-50 px-4 py-3 font-semibold text-amber-800 underline"
-                        href={source.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        key={source.id}
-                      >
-                        {source.url}
-                      </a>
-                    );
-                  }
-
-                  const linkedCraft = crafts.find((currentCraft) => currentCraft.id === source.craftId);
-
-                  return (
-                    <button
-                      className="rounded-2xl bg-amber-50 px-4 py-3 text-left font-semibold text-amber-800 underline"
-                      type="button"
-                      key={source.id}
-                      onClick={() => {
-                        if (linkedCraft) {
-                          setSelectedInspirationCraft(linkedCraft);
-                        }
-                      }}
-                    >
-                      {linkedCraft ? `${linkedCraft.title} (Inspo Craft)` : 'Linked inspiration craft not found'}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+          {craft.status !== 'inspiration' ? (
+            <CircularProgress value={progress} onChange={setProgress} />
           ) : null}
 
-          <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-stone-950">Materials</h2>
-            {craft.materials.length > 0 ? (
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {craft.materials.map((material) => (
-                  <li className="rounded-2xl bg-amber-50 px-4 py-3 text-stone-700" key={material}>
-                    {material}
-                  </li>
+          <StatusBadge status={craft.status} />
+
+          <button
+            className="ml-auto rounded-full bg-stone-900 px-5 py-2 font-bold text-white hover:bg-stone-700"
+            type="button"
+            onClick={() => setEditingCraft(true)}
+          >
+            Edit craft
+          </button>
+        </div>
+
+        <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">
+          {craft.description}
+        </p>
+      </section>
+
+      <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-2xl font-bold text-stone-950">Photos</h2>
+
+        {currentPhotos.length > 0 ? (
+          <div>
+            <div className="relative overflow-hidden rounded-3xl bg-stone-100 p-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {currentPhotos.map((photo) => (
+                  <img
+                    key={`images-${photo.url}`}
+                    className="h-[38rem] w-full rounded-2xl object-contain"
+                    src={photo.url}
+                    alt={photo.alt}
+                  />
                 ))}
-              </ul>
-            ) : (
-              <p className="mt-3 text-stone-600">No materials added yet.</p>
-            )}
-          </section>
+              </div>
+
+              {craft.photos.length > photosPerLine ? (
+                <>
+                  <button
+                    className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
+                    type="button"
+                    onClick={goToPreviousPhoto}
+                    aria-label="Previous photo"
+                  >
+                    ←
+                  </button>
+
+                  <button
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
+                    type="button"
+                    onClick={goToNextPhoto}
+                    aria-label="Next photo"
+                  >
+                    →
+                  </button>
+                </>
+              ) : null}
+            </div>
+
+            {craft.photos.length > 1 ? (
+              <p className="mt-3 text-center text-sm font-semibold text-stone-500">
+                {currentPhotoIndex + 1} of {craft.photos.length}
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-stone-600">No photos added yet.</p>
+        )}
+      </section>
+
+      {sources.length > 0 ? (
+        <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-stone-950">Inspiration sources</h2>
+
+          <div className="mt-4 grid gap-3">
+            {sources.map((source) => {
+              if (source.type === 'external') {
+                return (
+                  <a
+                    className="rounded-2xl bg-amber-50 px-4 py-3 font-semibold text-amber-800 underline"
+                    href={source.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    key={source.id}
+                  >
+                    {source.url}
+                  </a>
+                );
+              }
+
+              const linkedCraft = crafts.find((currentCraft) => currentCraft.id === source.craftId);
+
+              return (
+                <button
+                  className="rounded-2xl bg-amber-50 px-4 py-3 text-left font-semibold text-amber-800 underline"
+                  type="button"
+                  key={source.id}
+                  onClick={() => {
+                    if (linkedCraft) {
+                      setSelectedInspirationCraft(linkedCraft);
+                    }
+                  }}
+                >
+                  {linkedCraft ? `${linkedCraft.title} (Inspo Craft)` : 'Linked inspiration craft not found'}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
+        <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-stone-950">Materials</h2>
+          {craft.materials.length > 0 ? (
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {craft.materials.map((material) => (
+                <li className="rounded-2xl bg-amber-50 px-4 py-3 text-stone-700" key={material}>
+                  {material}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-stone-600">No materials added yet.</p>
+          )}
+        </section>
 
         <aside className="space-y-4">
-        
-        <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-stone-950">Move craft</h2>
             <div className="mt-4 grid gap-2">
               {craft.status === 'inspiration' ? (
@@ -285,6 +283,7 @@ export const CraftDetailPage = () => {
 
               <button
                 className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
+                type="button"
                 onClick={() => setShowDeleteConfirm(true)}
               >
                 Delete Craft

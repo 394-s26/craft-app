@@ -353,7 +353,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
       <div className="flex items-center justify-between rounded-2xl border border-stone-200 px-4 py-3">
         <div>
-          <span className="text-sm font-bold text-stone-700">Visibility</span>
+          <span className="text-sm font-bold text-stone-700">Visibility: {isPublic ? 'Public' : 'Private'}</span>
           <p className="text-xs text-stone-500">{isPublic ? 'Anyone can view this craft' : 'Only you can see this craft'}</p>
         </div>
         <button
