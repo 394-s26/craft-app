@@ -29,8 +29,11 @@ type VisibilityFilter = 'all' | 'public' | 'private';
 
 export const FolderPage = ({ status, title, description }: FolderPageProps) => {
   const { crafts, loading, error } = useCrafts();
+
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(status);
-  const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
+
+  const [visibilityFilter, setVisibilityFilter] =
+    useState<VisibilityFilter>('all');
 
   if (status !== activeFilters) {
     setActiveFilters(status);
@@ -39,16 +42,23 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
   const toggleFilter = (s: CraftStatus) => {
     setActiveFilters((prev) =>
       prev.includes(s)
-        ? prev.length > 1 ? prev.filter((f) => f !== s) : prev
+        ? prev.length > 1
+          ? prev.filter((f) => f !== s)
+          : prev
         : [...prev, s],
     );
   };
 
+  const effectiveFilters =
+    status.length > 1 ? activeFilters : status;
+
   const filteredCrafts = crafts
-    .filter((craft) => activeFilters.includes(craft.status))
+    .filter((craft) => effectiveFilters.includes(craft.status))
     .filter((craft) => {
       if (visibilityFilter === 'public') return craft.isPublic;
+
       if (visibilityFilter === 'private') return !craft.isPublic;
+
       return true;
     });
 
