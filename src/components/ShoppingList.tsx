@@ -26,7 +26,7 @@ export const ShoppingList = ({ crafts }: ShoppingListProps) => {
     <div className="space-y-6">
       {craftsWithMaterials.map((craft) => (
         <div key={craft.id} className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-3 font-bold text-stone-900">{craft.title}</h3>
+          <h3 className="mb-3 font-bold text-ghibli-deep">{craft.title}</h3>
           <ul className="space-y-2">
             {craft.materials.map((material) => {
               const key = `${craft.id}:${material}`;
@@ -38,9 +38,9 @@ export const ShoppingList = ({ crafts }: ShoppingListProps) => {
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => toggle(key)}
-                      className="h-4 w-4 accent-amber-700"
+                      className="h-4 w-4 accent-ghibli-forest"
                     />
-                    <span className={isChecked ? 'text-stone-400 line-through' : 'text-stone-800'}>
+                    <span className={isChecked ? 'text-stone-400 line-through' : 'text-ghibli-deep'}>
                       {material}
                     </span>
                   </label>

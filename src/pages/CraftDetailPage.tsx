@@ -123,21 +123,21 @@ export const CraftDetailPage = () => {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <div className="flex items-center justify-between gap-4">
-        <Link className="text-sm font-bold text-amber-800 hover:text-amber-950" to={`/${folderRoute}`}>
+        <Link className="text-sm font-bold text-ghibli-forest hover:text-ghibli-deep" to={`/${folderRoute}`}>
           ← Back to folder
         </Link>
       </div>
 
       <section className="mt-6">
         <div className="flex flex-wrap items-center gap-4">
-          <h1 className="text-4xl font-black tracking-tight text-stone-950">
+          <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">
             {craft.title}
           </h1>
 
           <StatusBadge status={craft.status} />
 
           <button
-            className="ml-auto rounded-full bg-stone-900 px-5 py-2 font-bold text-white hover:bg-stone-700"
+            className="ml-auto rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
             type="button"
             onClick={() => setEditingCraft(true)}
           >
@@ -157,11 +157,11 @@ export const CraftDetailPage = () => {
       </section>
 
       <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-2xl font-bold text-stone-950">Photos</h2>
+        <h2 className="mb-4 text-2xl font-bold text-ghibli-deep">Photos</h2>
 
         {currentPhotos.length > 0 ? (
           <div>
-            <div className="relative overflow-hidden rounded-3xl bg-stone-100 p-6">
+            <div className="relative overflow-hidden rounded-3xl bg-ghibli-soft p-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {currentPhotos.map((photo) => (
                   <img
@@ -176,7 +176,7 @@ export const CraftDetailPage = () => {
               {craft.photos.length > photosPerLine ? (
                 <>
                   <button
-                    className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-ghibli-deep shadow hover:bg-white"
                     type="button"
                     onClick={goToPreviousPhoto}
                     aria-label="Previous photo"
@@ -185,7 +185,7 @@ export const CraftDetailPage = () => {
                   </button>
 
                   <button
-                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-stone-900 shadow hover:bg-white"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-4 py-3 text-2xl font-black text-ghibli-deep shadow hover:bg-white"
                     type="button"
                     onClick={goToNextPhoto}
                     aria-label="Next photo"
@@ -209,7 +209,7 @@ export const CraftDetailPage = () => {
 
       {sources.length > 0 ? (
         <section className="mt-8 h-150 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-stone-950">Inspiration Sources</h2>
+          <h2 className="text-2xl font-bold text-ghibli-deep">Inspiration Sources</h2>
 
           <div className="mt-4">
             <div className="grid grid-cols-2 gap-4">
@@ -235,7 +235,7 @@ export const CraftDetailPage = () => {
                             <p className="text-stone-500 text-sm">Image not available</p>
                           )}
                         </div>
-                        <p className="text-center font-semibold text-amber-800 text-sm">External Link ({source.url.substring(8, 30)}...)</p>
+                        <p className="text-center font-semibold text-ghibli-forest text-sm">External Link ({source.url.substring(8, 30)}...)</p>
                       </button>
                     );
                   }
@@ -260,7 +260,7 @@ export const CraftDetailPage = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <p className="text-center font-semibold text-amber-800 text-sm">
+                      <p className="text-center font-semibold text-ghibli-forest text-sm">
                         {linkedCraft?.title || 'View in Inspo'}
                       </p>
                     </button>
@@ -271,7 +271,7 @@ export const CraftDetailPage = () => {
             {sources.length > 2 && (
               <div className="mt-4 flex justify-center gap-3">
                 <button
-                  className="rounded-full bg-stone-900 px-4 py-2 font-semibold text-white hover:bg-stone-700 disabled:opacity-50"
+                  className="rounded-full bg-ghibli-deep px-4 py-2 font-semibold text-white hover:bg-ghibli-forest disabled:opacity-50"
                   type="button"
                   onClick={() =>
                     setInspirationSlideIndex(
@@ -285,7 +285,7 @@ export const CraftDetailPage = () => {
                   ← Previous
                 </button>
                 <button
-                  className="rounded-full bg-stone-900 px-4 py-2 font-semibold text-white hover:bg-stone-700 disabled:opacity-50"
+                  className="rounded-full bg-ghibli-deep px-4 py-2 font-semibold text-white hover:bg-ghibli-forest disabled:opacity-50"
                   type="button"
                   onClick={() =>
                     setInspirationSlideIndex(
@@ -306,11 +306,11 @@ export const CraftDetailPage = () => {
 
       <section className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
         <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-stone-950">Materials</h2>
+          <h2 className="text-2xl font-bold text-ghibli-deep">Materials</h2>
           {craft.materials.length > 0 ? (
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
               {craft.materials.map((material) => (
-                <li className="rounded-2xl bg-amber-50 px-4 py-3 text-stone-700" key={material}>
+                <li className="rounded-2xl bg-ghibli-light px-4 py-3 text-stone-700" key={material}>
                   {material}
                 </li>
               ))}
@@ -322,18 +322,18 @@ export const CraftDetailPage = () => {
 
         <aside className="space-y-4">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-stone-950">Move craft</h2>
+            <h2 className="text-xl font-bold text-ghibli-deep">Move craft</h2>
             <div className="mt-4 grid gap-2">
               {craft.status === 'inspiration' ? (
                 <button
-                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
+                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-ghibli-light"
                   onClick={() => void handleMove('work-in-progress')}
                 >
                   Move to Work In Progress
                 </button>
               ) : (
                 <button
-                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-stone-100"
+                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-ghibli-light"
                   onClick={() => void handleMove('inspiration')}
                 >
                   Move to Inspiration
@@ -351,7 +351,7 @@ export const CraftDetailPage = () => {
           </section>
 
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-stone-950">Share</h2>
+            <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
             {friends.length === 0 ? (
               <p className="mt-3 text-sm text-stone-500">
                 Add friends on the Friends page to share this craft.
@@ -364,7 +364,7 @@ export const CraftDetailPage = () => {
                     <li key={friend.id} className="flex items-center justify-between">
                       <span className="truncate text-sm text-stone-700">{friend.toEmail}</span>
                       <button
-                        className={`ml-3 shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${isShared ? 'bg-amber-700 text-white hover:bg-amber-900' : 'border border-stone-300 text-stone-700 hover:bg-stone-100'}`}
+                        className={`ml-3 shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${isShared ? 'bg-ghibli-forest text-white hover:bg-ghibli-deep' : 'border border-stone-300 text-stone-700 hover:bg-ghibli-light'}`}
                         type="button"
                         onClick={() => void toggleShare(friend.toEmail)}
                       >
@@ -383,14 +383,14 @@ export const CraftDetailPage = () => {
       {showDeleteConfirm ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/60 px-4">
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
-            <h2 className="text-2xl font-black text-stone-950">Delete this craft?</h2>
+            <h2 className="text-2xl font-black text-ghibli-deep">Delete this craft?</h2>
             <p className="mt-3 text-stone-600">
               Are you sure you want to delete "{craft.title}"? This action cannot be undone.
             </p>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
-                className="rounded-full border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100"
+                className="rounded-full border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-ghibli-light"
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
               >
@@ -414,12 +414,12 @@ export const CraftDetailPage = () => {
           <div className="max-h-full w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-3xl font-black tracking-tight text-stone-950">Edit craft</h2>
+                <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit craft</h2>
                 <p className="mt-1 text-sm text-stone-500">Update the craft details, sources, materials, and photos.</p>
               </div>
 
               <button
-                className="rounded-full bg-stone-900 px-4 py-2 text-sm font-bold text-white hover:bg-stone-700"
+                className="rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest"
                 type="button"
                 onClick={() => setEditingCraft(false)}
               >
@@ -438,14 +438,14 @@ export const CraftDetailPage = () => {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-3xl font-black tracking-tight text-stone-950">{selectedInspirationCraft.title}</h2>
+                  <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">{selectedInspirationCraft.title}</h2>
                   <StatusBadge status={selectedInspirationCraft.status} />
                 </div>
                 <p className="mt-3 whitespace-pre-wrap leading-7 text-stone-700">{selectedInspirationCraft.description}</p>
               </div>
 
               <button
-                className="rounded-full bg-stone-900 px-4 py-2 text-sm font-bold text-white hover:bg-stone-700"
+                className="rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest"
                 type="button"
                 onClick={() => setSelectedInspirationCraft(null)}
               >
@@ -455,7 +455,7 @@ export const CraftDetailPage = () => {
 
             {selectedInspirationCraft.sourceUrl ? (
               <a
-                className="mt-5 inline-flex font-semibold text-amber-800 underline"
+                className="mt-5 inline-flex font-semibold text-ghibli-forest underline"
                 href={selectedInspirationCraft.sourceUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -464,8 +464,8 @@ export const CraftDetailPage = () => {
               </a>
             ) : null}
 
-            <section className="mt-6 rounded-2xl bg-amber-50 p-4">
-              <h3 className="font-bold text-stone-900">Materials</h3>
+            <section className="mt-6 rounded-2xl bg-ghibli-light p-4">
+              <h3 className="font-bold text-ghibli-deep">Materials</h3>
               {selectedInspirationCraft.materials.length > 0 ? (
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                   {selectedInspirationCraft.materials.map((material) => (

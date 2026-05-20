@@ -17,7 +17,7 @@ export const App = () => (
       <AuthGate>
         <CraftProvider>
           <FriendProvider>
-            <div className="min-h-screen bg-amber-50 text-stone-900">
+            <div className="min-h-screen bg-ghibli-light text-stone-900">
               <NavBar />
               <Routes>
                 <Route path="/" element={<HomePage />} />

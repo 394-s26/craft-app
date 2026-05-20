@@ -26,23 +26,23 @@ export const FriendsPage = () => {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-4xl font-black tracking-tight text-stone-950">My Friends</h1>
+      <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">My Friends</h1>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[22rem_1fr]">
         <div className="space-y-6">
           <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-stone-950">Add a friend</h2>
+            <h2 className="text-xl font-bold text-ghibli-deep">Add a friend</h2>
             <p className="mt-1 text-sm text-stone-500">Enter their email to share crafts with them.</p>
             <form className="mt-4 flex gap-3" onSubmit={(event) => void handleAdd(event)}>
               <input
-                className="min-w-0 flex-1 rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700"
+                className="min-w-0 flex-1 rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-ghibli-forest"
                 type="email"
                 placeholder="friend@example.com"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
               <button
-                className="rounded-2xl bg-stone-900 px-5 py-3 font-bold text-white hover:bg-stone-700 disabled:opacity-50"
+                className="rounded-2xl bg-ghibli-deep px-5 py-3 font-bold text-white hover:bg-ghibli-forest disabled:opacity-50"
                 type="submit"
                 disabled={adding}
               >
@@ -56,10 +56,10 @@ export const FriendsPage = () => {
 
           {friends.length > 0 ? (
             <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-bold text-stone-950">People you've added</h2>
+              <h2 className="text-xl font-bold text-ghibli-deep">People you've added</h2>
               <ul className="mt-4 space-y-2">
                 {friends.map((friend) => (
-                  <li key={friend.id} className="flex items-center justify-between rounded-2xl bg-amber-50 px-4 py-3">
+                  <li key={friend.id} className="flex items-center justify-between rounded-2xl bg-ghibli-light px-4 py-3">
                     <span className="truncate text-sm text-stone-700">{friend.toEmail}</span>
                     <button
                       className="ml-3 shrink-0 rounded-full border border-stone-300 px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-100"
@@ -76,7 +76,7 @@ export const FriendsPage = () => {
         </div>
 
         <section>
-          <h2 className="text-xl font-bold text-stone-950">Shared with me</h2>
+          <h2 className="text-xl font-bold text-ghibli-deep">Shared with me</h2>
           {loading ? (
             <p className="mt-4 text-stone-600">Loading...</p>
           ) : sharedWithMe.length === 0 ? (
@@ -97,11 +97,11 @@ export const FriendsPage = () => {
                       alt={craft.photos[0].alt}
                     />
                   ) : (
-                    <div className="h-44 w-full bg-amber-100" />
+                    <div className="h-44 w-full bg-ghibli-soft" />
                   )}
                   <div className="p-4">
                     <p className="text-xs text-stone-500">From {getOwnerEmail(craft)}</p>
-                    <h3 className="mt-1 font-bold text-stone-900">{craft.title}</h3>
+                    <h3 className="mt-1 font-bold text-ghibli-deep">{craft.title}</h3>
                     <div className="mt-2">
                       <StatusBadge status={craft.status} />
                     </div>
@@ -120,7 +120,7 @@ export const FriendsPage = () => {
               <div>
                 <p className="text-sm text-stone-500">Shared by {getOwnerEmail(selectedCraft)}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-3">
-                  <h2 className="text-3xl font-black tracking-tight text-stone-950">{selectedCraft.title}</h2>
+                  <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">{selectedCraft.title}</h2>
                   <StatusBadge status={selectedCraft.status} />
                 </div>
                 {selectedCraft.description ? (
@@ -128,7 +128,7 @@ export const FriendsPage = () => {
                 ) : null}
               </div>
               <button
-                className="shrink-0 rounded-full bg-stone-900 px-4 py-2 text-sm font-bold text-white hover:bg-stone-700"
+                className="shrink-0 rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest"
                 type="button"
                 onClick={() => setSelectedCraft(null)}
               >
@@ -137,8 +137,8 @@ export const FriendsPage = () => {
             </div>
 
             {selectedCraft.materials.length > 0 ? (
-              <section className="mt-6 rounded-2xl bg-amber-50 p-4">
-                <h3 className="font-bold text-stone-900">Materials</h3>
+              <section className="mt-6 rounded-2xl bg-ghibli-light p-4">
+                <h3 className="font-bold text-ghibli-deep">Materials</h3>
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                   {selectedCraft.materials.map((material) => (
                     <li className="rounded-2xl bg-white px-4 py-3 text-stone-700" key={material}>

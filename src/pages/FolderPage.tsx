@@ -16,12 +16,12 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
     inactive: 'border-stone-300 bg-white text-stone-700 hover:border-blue-600',
   },
   'work-in-progress': {
-    active: 'border-amber-700 bg-amber-700 text-white',
-    inactive: 'border-stone-300 bg-white text-stone-700 hover:border-amber-700',
+    active: 'border-ghibli-forest bg-ghibli-forest text-white',
+    inactive: 'border-stone-300 bg-white text-stone-700 hover:border-ghibli-forest',
   },
   completed: {
-    active: 'border-green-700 bg-green-700 text-white',
-    inactive: 'border-stone-300 bg-white text-stone-700 hover:border-green-700',
+    active: 'border-ghibli-deep bg-ghibli-deep text-white',
+    inactive: 'border-stone-300 bg-white text-stone-700 hover:border-ghibli-deep',
   },
 };
 
@@ -34,10 +34,6 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
 
   const [visibilityFilter, setVisibilityFilter] =
     useState<VisibilityFilter>('all');
-
-  if (status !== activeFilters) {
-    setActiveFilters(status);
-  }
 
   const toggleFilter = (s: CraftStatus) => {
     setActiveFilters((prev) =>
@@ -65,7 +61,7 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <section className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight text-stone-950">{title}</h1>
+        <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">{title}</h1>
         <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
       </section>
 
@@ -95,8 +91,8 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
               onClick={() => setVisibilityFilter(v)}
               className={`rounded-full border px-4 py-1.5 text-sm font-semibold capitalize transition-colors ${
                 visibilityFilter === v
-                  ? 'border-stone-700 bg-stone-700 text-white'
-                  : 'border-stone-300 bg-white text-stone-700 hover:border-stone-700'
+                  ? 'border-ghibli-deep bg-ghibli-deep text-white'
+                  : 'border-stone-300 bg-white text-stone-700 hover:border-ghibli-deep'
               }`}
             >
               {v}

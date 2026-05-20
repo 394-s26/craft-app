@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ghibli-light: #EFF7EE;
+  --color-ghibli-soft: #C8E1CA;
+  --color-ghibli-sage: #73AA76;
+  --color-ghibli-forest: #467953;
+  --color-ghibli-deep: #356045;
+  --color-ghibli-ink: #1E3828;
+}
+
 :root {
   color-scheme: light;
   font-family:
