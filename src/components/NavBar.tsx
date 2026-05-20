@@ -2,15 +2,15 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? 'bg-stone-900 text-white' : 'text-stone-700 hover:bg-stone-200'}`;
+  `rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? 'bg-ghibli-deep text-white' : 'text-ghibli-forest hover:bg-ghibli-soft'}`;
 
 export const NavBar = () => {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-10 border-b border-stone-200 bg-amber-50/90 backdrop-blur">
+    <header className="sticky top-0 z-10 border-b border-ghibli-soft bg-ghibli-light/90 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <NavLink to="/" className="text-2xl font-black tracking-tight text-stone-900">
+        <NavLink to="/" className="text-2xl font-black tracking-tight text-ghibli-deep">
           Crafter
         </NavLink>
         <div className="flex flex-wrap items-center gap-2">
@@ -37,7 +37,7 @@ export const NavBar = () => {
           </NavLink>
         </div>
         {user ? (
-          <button className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-white" onClick={signOut}>
+          <button className="rounded-full border border-ghibli-soft px-4 py-2 text-sm font-semibold text-ghibli-forest hover:bg-white" onClick={signOut}>
             Sign out
           </button>
         ) : null}

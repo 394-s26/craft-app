@@ -14,7 +14,7 @@ export const NewCraftPage = () => {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-4xl font-black tracking-tight text-stone-950">Create a craft</h1>
+      <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">Create a craft</h1>
       <p className="mt-3 text-stone-600">Add inspiration, a work in progress, or a completed project.</p>
       <div className="mt-8">
         <CraftForm submitLabel="Save craft" onSubmit={handleSubmit} />
