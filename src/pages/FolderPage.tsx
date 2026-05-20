@@ -32,6 +32,10 @@ export const FolderPage = ({ status, title, description }: FolderPageProps) => {
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(status);
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
 
+  if (status !== activeFilters) {
+    setActiveFilters(status);
+  }
+
   const toggleFilter = (s: CraftStatus) => {
     setActiveFilters((prev) =>
       prev.includes(s)
