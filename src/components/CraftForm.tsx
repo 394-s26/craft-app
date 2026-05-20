@@ -14,17 +14,22 @@ interface MaterialEntry {
   id: string;
   name: string;
   quantity: string;
+  unit: string;
 }
+
+const UNIT_OPTIONS = ['yards', 'meters', 'inches', 'cm', 'grams', 'oz', 'skeins', 'balls', 'spools', 'sheets', 'pieces'];
 
 const parseMaterial = (s: string): MaterialEntry => {
   const match = s.match(/^(.+)\s+\((.+)\)$/);
   return match
-    ? { id: crypto.randomUUID(), name: match[1], quantity: match[2] }
-    : { id: crypto.randomUUID(), name: s, quantity: '' };
+    ? { id: crypto.randomUUID(), name: match[1], quantity: match[2], unit: '' }
+    : { id: crypto.randomUUID(), name: s, quantity: '', unit: '' };
 };
 
-const serializeMaterial = (m: MaterialEntry): string =>
-  m.quantity.trim() ? `${m.name.trim()} (${m.quantity.trim()})` : m.name.trim();
+const serializeMaterial = (m: MaterialEntry): string => {
+  const qtyUnit = [m.quantity.trim(), m.unit.trim()].filter(Boolean).join(' ');
+  return qtyUnit ? `${m.name.trim()} (${qtyUnit})` : m.name.trim();
+};
 
 const statusOptions: { label: string; value: CraftStatus }[] = [
   { label: 'Inspiration', value: 'inspiration' },
@@ -43,14 +48,19 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
   );
   const [newMaterialName, setNewMaterialName] = useState('');
   const [newMaterialQuantity, setNewMaterialQuantity] = useState('');
+  const [newMaterialUnit, setNewMaterialUnit] = useState('');
+  const [newMaterialCustomUnit, setNewMaterialCustomUnit] = useState('');
   const [isPublic, setIsPublic] = useState(initialCraft?.isPublic ?? false);
 
   const addMaterial = () => {
     const trimmedName = newMaterialName.trim();
     if (!trimmedName) return;
-    setMaterials((prev) => [...prev, { id: crypto.randomUUID(), name: trimmedName, quantity: newMaterialQuantity.trim() }]);
+    const effectiveUnit = newMaterialUnit === 'custom' ? newMaterialCustomUnit.trim() : newMaterialUnit;
+    setMaterials((prev) => [...prev, { id: crypto.randomUUID(), name: trimmedName, quantity: newMaterialQuantity.trim(), unit: effectiveUnit }]);
     setNewMaterialName('');
     setNewMaterialQuantity('');
+    setNewMaterialUnit('');
+    setNewMaterialCustomUnit('');
   };
 
   const removeMaterial = (id: string) => {
@@ -216,27 +226,47 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
             {materials.map((m) => (
               <li key={m.id} className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm">
                 <span className="flex-1 text-ghibli-deep">{m.name}</span>
-                {m.quantity && <span className="text-stone-500">{m.quantity}</span>}
+                {(m.quantity || m.unit) && (
+                  <span className="text-stone-500">{[m.quantity, m.unit].filter(Boolean).join(' ')}</span>
+                )}
                 <button type="button" onClick={() => removeMaterial(m.id)} className="text-stone-400 hover:text-red-600">×</button>
               </li>
             ))}
           </ul>
         )}
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           <input
-            className="flex-1 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-ghibli-forest"
+            className="min-w-0 flex-1 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-ghibli-forest"
             placeholder="Material name"
             value={newMaterialName}
             onChange={(e) => setNewMaterialName(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addMaterial(); } }}
           />
           <input
-            className="w-32 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-ghibli-forest"
-            placeholder="Quantity"
+            className="w-20 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-ghibli-forest"
+            placeholder="Qty"
             value={newMaterialQuantity}
             onChange={(e) => setNewMaterialQuantity(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addMaterial(); } }}
           />
+          <select
+            className="rounded-2xl border border-stone-300 px-3 py-2 text-sm outline-none focus:border-ghibli-forest"
+            value={newMaterialUnit}
+            onChange={(e) => { setNewMaterialUnit(e.target.value); setNewMaterialCustomUnit(''); }}
+          >
+            <option value="">Unit</option>
+            {UNIT_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
+            <option value="custom">Custom...</option>
+          </select>
+          {newMaterialUnit === 'custom' && (
+            <input
+              className="w-28 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-ghibli-forest"
+              placeholder="e.g. skeins"
+              value={newMaterialCustomUnit}
+              onChange={(e) => setNewMaterialCustomUnit(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addMaterial(); } }}
+            />
+          )}
           <button
             type="button"
             onClick={addMaterial}
