@@ -18,6 +18,7 @@ export const CraftDetailPage = () => {
   const [editingCraft, setEditingCraft] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [inspirationSlideIndex, setInspirationSlideIndex] = useState(0);
 
   const craft = crafts.find((currentCraft) => currentCraft.id === craftId);
 
@@ -207,42 +208,98 @@ export const CraftDetailPage = () => {
       </section>
 
       {sources.length > 0 ? (
-        <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-stone-950">Inspiration sources</h2>
+        <section className="mt-8 h-150 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-stone-950">Inspiration Sources</h2>
 
-          <div className="mt-4 grid gap-3">
-            {sources.map((source) => {
-              if (source.type === 'external') {
-                return (
-                  <a
-                    className="rounded-2xl bg-amber-50 px-4 py-3 font-semibold text-amber-800 underline"
-                    href={source.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    key={source.id}
-                  >
-                    {source.url}
-                  </a>
-                );
-              }
+          <div className="mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              {sources
+                .slice(inspirationSlideIndex, inspirationSlideIndex + 2)
+                .map((source) => {
+                  if (source.type === 'external') {
+                    return (
+                      <button
+                        key={source.id}
+                        className="flex flex-col items-center overflow-hidden rounded-2xl hover:opacity-80 transition"
+                        type="button"
+                        onClick={() => window.open(source.url, '_blank')}
+                      >
+                        <div className="w-full h-100 bg-stone-100 rounded-2xl flex items-center justify-center overflow-hidden mb-2">
+                          {source ? ( // todo add photo to external source type
+                            <img
+                              src={source.url} // todo add photo to external source type
+                              alt="External source"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <p className="text-stone-500 text-sm">Image not available</p>
+                          )}
+                        </div>
+                        <p className="text-center font-semibold text-amber-800 text-sm">External Link ({source.url.substring(8, 30)}...)</p>
+                      </button>
+                    );
+                  }
 
-              const linkedCraft = crafts.find((currentCraft) => currentCraft.id === source.craftId);
+                  const linkedCraft = crafts.find((currentCraft) => currentCraft.id === source.craftId);
 
-              return (
+                  return (
+                    <button
+                      key={source.id}
+                      className="flex flex-col items-center overflow-hidden rounded-2xl hover:opacity-80 transition"
+                      type="button"
+                      onClick={() => {
+                        if (linkedCraft) {
+                          window.open(`/crafts/${linkedCraft.id}`);
+                        }
+                      }}
+                    >
+                      <div className="w-full h-100 bg-stone-100 rounded-2xl flex items-center justify-center overflow-hidden mb-2">
+                        <img
+                          src={linkedCraft?.photos[0]?.url}
+                          alt={linkedCraft?.photos[0]?.alt || linkedCraft?.title || 'Inspiration craft'}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <p className="text-center font-semibold text-amber-800 text-sm">
+                        {linkedCraft?.title || 'View in Inspo'}
+                      </p>
+                    </button>
+                  );
+                })}
+            </div>
+
+            {sources.length > 2 && (
+              <div className="mt-4 flex justify-center gap-3">
                 <button
-                  className="rounded-2xl bg-amber-50 px-4 py-3 text-left font-semibold text-amber-800 underline"
+                  className="rounded-full bg-stone-900 px-4 py-2 font-semibold text-white hover:bg-stone-700 disabled:opacity-50"
                   type="button"
-                  key={source.id}
-                  onClick={() => {
-                    if (linkedCraft) {
-                      setSelectedInspirationCraft(linkedCraft);
-                    }
-                  }}
+                  onClick={() =>
+                    setInspirationSlideIndex(
+                      inspirationSlideIndex === 0
+                        ? Math.max(0, sources.length - 2)
+                        : inspirationSlideIndex - 2
+                    )
+                  }
+                  disabled={inspirationSlideIndex === 0}
                 >
-                  {linkedCraft ? `${linkedCraft.title} (Inspo Craft)` : 'Linked inspiration craft not found'}
+                  ← Previous
                 </button>
-              );
-            })}
+                <button
+                  className="rounded-full bg-stone-900 px-4 py-2 font-semibold text-white hover:bg-stone-700 disabled:opacity-50"
+                  type="button"
+                  onClick={() =>
+                    setInspirationSlideIndex(
+                      inspirationSlideIndex + 2 >= sources.length
+                        ? 0
+                        : inspirationSlideIndex + 2
+                    )
+                  }
+                  disabled={inspirationSlideIndex + 2 >= sources.length}
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </div>
         </section>
       ) : null}
