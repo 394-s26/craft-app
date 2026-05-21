@@ -9,6 +9,7 @@ interface FolderPageProps {
   status: CraftStatus[];
   title: string;
   description: string;
+  defaultFilters?: CraftStatus[];
 }
 
 const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = {
@@ -28,10 +29,12 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
 
 type VisibilityFilter = 'all' | 'public' | 'private';
 
-export const FolderPage = ({ status, title, description }: FolderPageProps) => {
+export const FolderPage = ({ status, title, description, defaultFilters }: FolderPageProps) => {
   const { crafts, loading, error, addCraft } = useCrafts();
 
-  const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(status);
+  const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(
+    defaultFilters ?? status,
+  );
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
 
   const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';
