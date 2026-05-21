@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CraftGrid } from '../components/CraftGrid';
 import { InspoForm } from '../components/InspoForm';
 import { useCrafts } from '../hooks/useCrafts';
@@ -35,6 +35,9 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(
     defaultFilters ?? status,
   );
+  useEffect(() => {
+    setActiveFilters(defaultFilters ?? status);
+  }, [defaultFilters, status]);
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
 
   const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';

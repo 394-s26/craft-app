@@ -141,7 +141,15 @@ export const CraftDetailPage = () => {
             type="button"
             onClick={() => setEditingCraft(true)}
           >
-            Edit craft
+            Edit Craft
+          </button>
+
+          <button
+              className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete Craft
           </button>
         </div>
 
@@ -325,6 +333,8 @@ export const CraftDetailPage = () => {
             )}
           </section>
         ) : null}
+
+        
 
         <aside className="space-y-4">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
