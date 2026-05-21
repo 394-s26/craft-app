@@ -305,51 +305,28 @@ export const CraftDetailPage = () => {
       ) : null}
 
       <section className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
-        <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-ghibli-deep">Materials</h2>
-          {craft.materials.length > 0 ? (
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-              {craft.materials.map((material) => (
-                <li className="rounded-2xl bg-ghibli-light px-4 py-3 text-stone-700" key={material}>
-                  {material}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 text-stone-600">No materials added yet.</p>
-          )}
-        </section>
+        {craft.status !== 'inspiration' ? (
+          <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-bold text-ghibli-deep">Materials</h2>
+
+            {craft.materials.length > 0 ? (
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {craft.materials.map((material) => (
+                  <li
+                    className="rounded-2xl bg-ghibli-light px-4 py-3 text-stone-700"
+                    key={material}
+                  >
+                    {material}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-stone-600">No materials added yet.</p>
+            )}
+          </section>
+        ) : null}
 
         <aside className="space-y-4">
-          <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-ghibli-deep">Move craft</h2>
-            <div className="mt-4 grid gap-2">
-              {craft.status === 'inspiration' ? (
-                <button
-                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-ghibli-light"
-                  onClick={() => void handleMove('work-in-progress')}
-                >
-                  Move to Work In Progress
-                </button>
-              ) : (
-                <button
-                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-ghibli-light"
-                  onClick={() => void handleMove('inspiration')}
-                >
-                  Move to Inspiration
-                </button>
-              )}
-
-              <button
-                className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-              >
-                Delete Craft
-              </button>
-            </div>
-          </section>
-
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
             {friends.length === 0 ? (
