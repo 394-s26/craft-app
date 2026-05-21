@@ -276,7 +276,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
           </button>
         </div>
       </div>
-
+      {/*
       <label className="block">
         <span className="text-sm font-bold text-stone-700">Folder</span>
         <select className="mt-2 w-full rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-ghibli-forest" value={status} onChange={(event) => setStatus(event.target.value as CraftStatus)}>
@@ -287,6 +287,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
           ))}
         </select>
       </label>
+      */}
 
       <section className="rounded-2xl bg-ghibli-light p-4">
         <div className="flex items-center justify-between gap-3">

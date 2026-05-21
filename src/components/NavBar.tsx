@@ -32,9 +32,11 @@ export const NavBar = () => {
           <NavLink className={linkClass} to="/friends">
             My Friends
           </NavLink>
+          {/*
           <NavLink className={linkClass} to="/new">
             New Craft
           </NavLink>
+          */}
         </div>
         {user ? (
           <button className="rounded-full border border-ghibli-soft px-4 py-2 text-sm font-semibold text-ghibli-forest hover:bg-white" onClick={signOut}>
