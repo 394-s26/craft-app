@@ -1,15 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CraftGrid } from '../components/CraftGrid';
-import { InspoForm } from '../components/InspoForm';
 import { useCrafts } from '../hooks/useCrafts';
-import type { CraftStatus, CraftInput } from '../types/Craft';
+import type { CraftStatus } from '../types/Craft';
 import { formatStatus } from '../utilities/formatStatus';
 
 interface FolderPageProps {
   status: CraftStatus[];
   title: string;
   description: string;
-  defaultFilters?: CraftStatus[];
 }
 
 const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = {
@@ -29,18 +27,13 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
 
 type VisibilityFilter = 'all' | 'public' | 'private';
 
-export const FolderPage = ({ status, title, description, defaultFilters }: FolderPageProps) => {
-  const { crafts, loading, error, addCraft } = useCrafts();
+export const FolderPage = ({ status, title, description }: FolderPageProps) => {
+  const { crafts, loading, error } = useCrafts();
 
-  const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(
-    defaultFilters ?? status,
-  );
-  useEffect(() => {
-    setActiveFilters(defaultFilters ?? status);
-  }, [defaultFilters, status]);
-  const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
+  const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(status);
 
-  const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';
+  const [visibilityFilter, setVisibilityFilter] =
+    useState<VisibilityFilter>('all');
 
   const toggleFilter = (s: CraftStatus) => {
     setActiveFilters((prev) =>
@@ -52,19 +45,18 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
     );
   };
 
-  const effectiveFilters = status.length > 1 ? activeFilters : status;
+  const effectiveFilters =
+    status.length > 1 ? activeFilters : status;
 
   const filteredCrafts = crafts
     .filter((craft) => effectiveFilters.includes(craft.status))
     .filter((craft) => {
       if (visibilityFilter === 'public') return craft.isPublic;
+
       if (visibilityFilter === 'private') return !craft.isPublic;
+
       return true;
     });
-
-  const handleInspoSave = async (input: CraftInput) => {
-    await addCraft(input);
-  };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -72,10 +64,6 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
         <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">{title}</h1>
         <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
       </section>
-
-      {isInspirationOnly && (
-        <InspoForm onSave={handleInspoSave} />
-      )}
 
       <div className="mb-6 flex flex-wrap items-center gap-4">
         {status.length > 1 && (
@@ -86,9 +74,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
                 key={s}
                 type="button"
                 onClick={() => toggleFilter(s)}
-                className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive
-                }`}
+                className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive}`}
               >
                 {formatStatus(s)}
               </button>
@@ -115,17 +101,9 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
         </div>
       </div>
 
-      {loading ? <p className="text-stone-600">Loading crafts…</p> : null}
-      {error ? (
-        <p className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {!loading ? (
-        <CraftGrid
-          crafts={filteredCrafts}
-          emptyTitle={`No ${title.toLowerCase()} yet`}
-          emptyMessage="Add a craft and choose this folder to see it here."
-        />
-      ) : null}
+      {loading ? <p className="text-stone-600">Loading crafts...</p> : null}
+      {error ? <p className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
+      {!loading ? <CraftGrid crafts={filteredCrafts} emptyTitle={`No ${title.toLowerCase()} yet`} emptyMessage="Add a craft and choose this folder to see it here." /> : null}
     </main>
   );
 };
