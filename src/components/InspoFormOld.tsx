@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ImageIcon, X, Sparkles, Loader2 } from 'lucide-react';
+import { ImageIcon, X, Loader2 } from 'lucide-react';
 
 export interface NewInspiration {
   title?: string;

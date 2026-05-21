@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CraftGrid } from '../components/CraftGrid';
 import { InspoForm } from '../components/InspoForm';
+import { CraftForm } from '../components/CraftForm';
 import { useCrafts } from '../hooks/useCrafts';
 import type { CraftStatus, CraftInput } from '../types/Craft';
 import { formatStatus } from '../utilities/formatStatus';
@@ -18,7 +19,7 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
     inactive: 'border-stone-300 bg-white text-stone-700 hover:border-blue-600',
   },
   'work-in-progress': {
-    active: 'border-ghibli-forest bg-ghibli-forest text-white',
+    active: 'border-ghibli-deep bg-ghibli-deep text-white',
     inactive: 'border-stone-300 bg-white text-stone-700 hover:border-ghibli-forest',
   },
   completed: {
@@ -39,6 +40,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
     setActiveFilters(defaultFilters ?? status);
   }, [defaultFilters, status]);
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
+  const [showNewCraftModal, setShowNewCraftModal] = useState(false);
 
   const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';
 
@@ -66,11 +68,27 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
     await addCraft(input);
   };
 
+  const handleNewCraftSave = async (input: CraftInput) => {
+    await addCraft(input);
+    setShowNewCraftModal(false);
+  };
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <section className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">{title}</h1>
-        <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
+      <section className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">{title}</h1>
+          <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
+        </div>
+        {!isInspirationOnly && (
+          <button
+            type="button"
+            onClick={() => setShowNewCraftModal(true)}
+            className="shrink-0 rounded-full bg-ghibli-deep px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-80"
+          >
+            + New craft
+          </button>
+        )}
       </section>
 
       {isInspirationOnly && (
@@ -120,12 +138,37 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
         <p className="mb-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p>
       ) : null}
       {!loading ? (
-        <CraftGrid
-          crafts={filteredCrafts}
-          emptyTitle={`No ${title.toLowerCase()} yet`}
-          emptyMessage="Add a craft and choose this folder to see it here."
-        />
+        <div className={isInspirationOnly ? '[&>section]:items-start' : ''}>
+          <CraftGrid
+            crafts={filteredCrafts}
+            emptyTitle={`No ${title.toLowerCase()} yet`}
+            emptyMessage="Add a craft and choose this folder to see it here."
+          />
+        </div>
       ) : null}
+
+      {/* New craft modal */}
+      {showNewCraftModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowNewCraftModal(false); }}
+        >
+          <div className="w-full max-w-2xl rounded-3xl bg-white p-8 shadow-xl">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-black tracking-tight text-ghibli-deep">New craft</h2>
+              <button
+                type="button"
+                onClick={() => setShowNewCraftModal(false)}
+                className="text-stone-400 hover:text-stone-600 text-xl leading-none"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <CraftForm submitLabel="Save craft" onSubmit={handleNewCraftSave} />
+          </div>
+        </div>
+      )}
     </main>
   );
 };

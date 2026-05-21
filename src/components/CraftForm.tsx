@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import type { Craft, CraftInput, CraftPhoto, CraftSource, CraftStatus } from '../types/Craft';
 import { useAuth } from '../hooks/useAuth';
 import { useCrafts } from '../hooks/useCrafts';
@@ -31,11 +31,13 @@ const serializeMaterial = (m: MaterialEntry): string => {
   return qtyUnit ? `${m.name.trim()} (${qtyUnit})` : m.name.trim();
 };
 
+{/*
 const statusOptions: { label: string; value: CraftStatus }[] = [
   { label: 'Inspiration', value: 'inspiration' },
   { label: 'Work in Progress', value: 'work-in-progress' },
   { label: 'Completed', value: 'completed' },
 ];
+*/}
 
 export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProps) => {
   const { user } = useAuth();
@@ -52,6 +54,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
   const [newMaterialCustomUnit, setNewMaterialCustomUnit] = useState('');
   const [isPublic, setIsPublic] = useState(initialCraft?.isPublic ?? false);
 
+  const [isDragging, setIsDragging] = useState(false);
   const addMaterial = () => {
     const trimmedName = newMaterialName.trim();
     if (!trimmedName) return;
@@ -73,12 +76,24 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
         ? [{ id: crypto.randomUUID(), type: 'external', url: initialCraft.sourceUrl }]
         : [],
   );
-  const [status, setStatus] = useState<CraftStatus>(initialCraft?.status ?? 'work-in-progress');
+  const [status] = useState<CraftStatus>(initialCraft?.status ?? 'work-in-progress');
   const [photos, setPhotos] = useState<CraftPhoto[]>(initialCraft?.photos ?? []);
   const [photoUrl, setPhotoUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+  const handlePaste = (e: ClipboardEvent) => {
+    const items = e.clipboardData?.files;
+    if (items && items.length > 0) {
+      void handleFileChange(items);
+    }
+  };
+
+  window.addEventListener('paste', handlePaste);
+  return () => window.removeEventListener('paste', handlePaste);
+}, []);
 
   const inspirationCrafts = crafts.filter(
     (craft) => craft.status === 'inspiration' && craft.id !== initialCraft?.id,
@@ -276,7 +291,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
           </button>
         </div>
       </div>
-
+      {/*
       <label className="block">
         <span className="text-sm font-bold text-stone-700">Folder</span>
         <select className="mt-2 w-full rounded-2xl border border-stone-300 px-4 py-3 outline-none focus:border-ghibli-forest" value={status} onChange={(event) => setStatus(event.target.value as CraftStatus)}>
@@ -287,6 +302,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
           ))}
         </select>
       </label>
+      */}
 
       <section className="rounded-2xl bg-ghibli-light p-4">
         <div className="flex items-center justify-between gap-3">
@@ -356,6 +372,25 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
 
       <section className="rounded-2xl bg-ghibli-light p-4">
         <h3 className="font-bold text-ghibli-deep">Photos</h3>
+        <div className={`mt-3 rounded-2xl border-2 border-dashed p-4 transition ${
+            isDragging
+              ? 'border-ghibli-forest bg-ghibli-light ring-2 ring-ghibli-forest/30'
+              : 'border-stone-300'
+          }`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragging(false);
+            void handleFileChange(e.dataTransfer.files);
+          }}
+          >
+          <p className="mb-3 text-sm font-medium text-stone-600">
+          Drag & drop images here, paste from clipboard, or upload files below.
+          </p>
         <div className="mt-3 grid gap-3 md:grid-cols-[1fr_auto]">
           <input className="rounded-2xl border border-stone-300 bg-white px-4 py-3 outline-none focus:border-ghibli-forest" value={photoUrl} onChange={(event) => setPhotoUrl(event.target.value)} placeholder="Paste image URL" />
           <button className="rounded-2xl border border-stone-300 bg-white px-5 py-3 font-semibold text-ghibli-deep hover:bg-ghibli-light" type="button" onClick={addPhotoUrl}>
@@ -379,6 +414,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
             ))}
           </div>
         ) : null}
+        </div>
       </section>
 
       <div className="flex items-center justify-between rounded-2xl border border-stone-200 px-4 py-3">
