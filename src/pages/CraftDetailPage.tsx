@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 export const CraftDetailPage = () => {
   const { craftId } = useParams();
   const navigate = useNavigate();
-  const { crafts, editCraft, moveCraft, removeCraft } = useCrafts();
+  const { crafts, editCraft, removeCraft } = useCrafts();
   const { friends } = useFriends();
 
   const [selectedInspirationCraft, setSelectedInspirationCraft] = useState<Craft | null>(null);
@@ -72,11 +72,12 @@ export const CraftDetailPage = () => {
     await editCraft(craft.id, input);
     setEditingCraft(false);
   };
-
+  {/*
   const handleMove = async (status: CraftStatus) => {
     await moveCraft(craft.id, status);
     navigate(`/${status === 'work-in-progress' || status === 'completed' ? 'work' : status}`);
   };
+  */}
 
   const handleDelete = async () => {
     await removeCraft(craft.id);

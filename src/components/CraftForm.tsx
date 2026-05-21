@@ -31,11 +31,13 @@ const serializeMaterial = (m: MaterialEntry): string => {
   return qtyUnit ? `${m.name.trim()} (${qtyUnit})` : m.name.trim();
 };
 
+{/*
 const statusOptions: { label: string; value: CraftStatus }[] = [
   { label: 'Inspiration', value: 'inspiration' },
   { label: 'Work in Progress', value: 'work-in-progress' },
   { label: 'Completed', value: 'completed' },
 ];
+*/}
 
 export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProps) => {
   const { user } = useAuth();
@@ -74,7 +76,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
         ? [{ id: crypto.randomUUID(), type: 'external', url: initialCraft.sourceUrl }]
         : [],
   );
-  const [status, setStatus] = useState<CraftStatus>(initialCraft?.status ?? 'work-in-progress');
+  const [status] = useState<CraftStatus>(initialCraft?.status ?? 'work-in-progress');
   const [photos, setPhotos] = useState<CraftPhoto[]>(initialCraft?.photos ?? []);
   const [photoUrl, setPhotoUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
