@@ -138,7 +138,6 @@ export const CraftDetailPage = () => {
           {craft.status !== 'inspiration' ? (
             <CircularProgress value={progress} onChange={setProgress}/>
           ) : null}
-          <StatusBadge status={craft.status} />
 
           <button
             className="ml-auto rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
