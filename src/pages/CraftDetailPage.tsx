@@ -135,6 +135,9 @@ export const CraftDetailPage = () => {
             {craft.title}
           </h1>
 
+          {craft.status !== 'inspiration' ? (
+            <CircularProgress value={progress} onChange={setProgress}/>
+          ) : null}
           <StatusBadge status={craft.status} />
 
           <button
@@ -152,12 +155,6 @@ export const CraftDetailPage = () => {
             >
               Delete Craft
           </button>
-        </div>
-
-        <div className="w-15 h-15" >
-          {craft.status !== 'inspiration' ? (
-            <CircularProgress value={progress} onChange={setProgress} size={77}/>
-          ) : null}
         </div>
 
         <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">
