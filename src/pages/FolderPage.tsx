@@ -5,6 +5,7 @@ import { CraftForm } from '../components/CraftForm';
 import { useCrafts } from '../hooks/useCrafts';
 import type { CraftStatus, CraftInput } from '../types/Craft';
 import { formatStatus } from '../utilities/formatStatus';
+import { formatProgressFilter } from '@/utilities/formatProgressFilter';
 
 interface FolderPageProps {
   status: CraftStatus[];
@@ -44,6 +45,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
       setActiveFilters([progressFilter]);
     }
   }, [progressFilter]);
+  const progressFilterOptions: ProgressFilterOption[] = ["all", "completed", "inspiration", "work-in-progress"];
 
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(
     defaultFilters ?? status,
@@ -108,6 +110,23 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
       )}
 
       <div className="mb-6 flex flex-wrap items-center gap-4">
+        {status.length > 1 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-bold text-stone-600">Status:</span>
+            {progressFilterOptions.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => toggleFilter(s)}
+                className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+                  activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive
+                }`}
+              >
+                {formatProgressFilter(s)}
+              </button>
+            ))}
+          </div>
+        )}
         {/* {status.length > 1 && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-bold text-stone-600">Status:</span>
