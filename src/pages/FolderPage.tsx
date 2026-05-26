@@ -30,8 +30,20 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
 
 type VisibilityFilter = 'all' | 'public' | 'private';
 
+// type ProgressFilterOption = 'all' | 'wip' | 'completed';
+type ProgressFilterOption = 'all' | CraftStatus;
+
 export const FolderPage = ({ status, title, description, defaultFilters }: FolderPageProps) => {
   const { crafts, loading, error, addCraft } = useCrafts();
+
+  const [progressFilter, setProgressFilter] = useState<ProgressFilterOption>('all');
+  useEffect(() => {
+    if (progressFilter === 'all') {
+      setActiveFilters(['completed', "inspiration", "work-in-progress"]);
+    } else {
+      setActiveFilters([progressFilter]);
+    }
+  }, [progressFilter]);
 
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(
     defaultFilters ?? status,
@@ -44,15 +56,15 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
 
   const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';
 
-  const toggleFilter = (s: CraftStatus) => {
-    setActiveFilters((prev) =>
-      prev.includes(s)
-        ? prev.length > 1
-          ? prev.filter((f) => f !== s)
-          : prev
-        : [...prev, s],
-    );
-  };
+  // const toggleFilter = (s: CraftStatus) => {
+  //   setActiveFilters((prev) =>
+  //     prev.includes(s)
+  //       ? prev.length > 1
+  //         ? prev.filter((f) => f !== s)
+  //         : prev
+  //       : [...prev, s],
+  //   );
+  // };
 
   const effectiveFilters = status.length > 1 ? activeFilters : status;
 
@@ -96,7 +108,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
       )}
 
       <div className="mb-6 flex flex-wrap items-center gap-4">
-        {status.length > 1 && (
+        {/* {status.length > 1 && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-bold text-stone-600">Status:</span>
             {status.map((s) => (
@@ -112,7 +124,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
               </button>
             ))}
           </div>
-        )}
+        )} */}
 
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-stone-600">Visibility:</span>
