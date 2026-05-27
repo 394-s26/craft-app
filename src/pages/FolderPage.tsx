@@ -4,7 +4,6 @@ import { InspoForm } from '../components/InspoForm';
 import { CraftForm } from '../components/CraftForm';
 import { useCrafts } from '../hooks/useCrafts';
 import type { CraftStatus, CraftInput } from '../types/Craft';
-// import { formatStatus } from '../utilities/formatStatus';
 import { formatProgressFilter } from '@/utilities/formatProgressFilter';
 
 interface FolderPageProps {
@@ -14,7 +13,6 @@ interface FolderPageProps {
   defaultFilters?: CraftStatus[];
 }
 
-// type ProgressFilterOption = 'all' | 'wip' | 'completed';
 type ProgressFilterOption = 'all' | CraftStatus;
 
 const statusStyles: Record<ProgressFilterOption, { active: string; inactive: string }> = {
@@ -65,15 +63,6 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
   const toggleFilter = (s: ProgressFilterOption) => {
     setProgressFilter(s);
   };
-  // const toggleFilter = (s: CraftStatus) => {
-  //   setActiveFilters((prev) =>
-  //     prev.includes(s)
-  //       ? prev.length > 1
-  //         ? prev.filter((f) => f !== s)
-  //         : prev
-  //       : [...prev, s],
-  //   );
-  // };
 
   const effectiveFilters = status.length > 1 ? activeFilters : status;
 
@@ -135,23 +124,6 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
             ))}
           </div>
         )}
-        {/* {status.length > 1 && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-bold text-stone-600">Status:</span>
-            {status.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => toggleFilter(s)}
-                className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive
-                }`}
-              >
-                {formatStatus(s)}
-              </button>
-            ))}
-          </div>
-        )} */}
 
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-stone-600">Visibility:</span>
