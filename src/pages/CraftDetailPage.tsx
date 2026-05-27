@@ -170,7 +170,9 @@ export const CraftDetailPage = () => {
             {craft.title}
           </h1>
 
-          <StatusBadge status={craft.status} />
+          {craft.status !== 'inspiration' ? (
+            <CircularProgress value={progress} onChange={setProgress}/>
+          ) : null}
 
           <button
             className="ml-auto rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
@@ -187,12 +189,6 @@ export const CraftDetailPage = () => {
             >
               Delete Craft
           </button>
-        </div>
-
-        <div className="w-15 h-15" >
-          {craft.status !== 'inspiration' ? (
-            <CircularProgress value={progress} onChange={setProgress} size={77}/>
-          ) : null}
         </div>
 
         <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">
