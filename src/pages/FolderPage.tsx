@@ -44,12 +44,12 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
   const [progressFilter, setProgressFilter] = useState<ProgressFilterOption>('all');
   useEffect(() => {
     if (progressFilter === 'all') {
-      setActiveFilters(['completed', "inspiration", "work-in-progress"]);
+      setActiveFilters(['completed', "work-in-progress"]);
     } else {
       setActiveFilters([progressFilter]);
     }
   }, [progressFilter]);
-  const progressFilterOptions: ProgressFilterOption[] = ["all", "completed", "inspiration", "work-in-progress"];
+  const progressFilterOptions: ProgressFilterOption[] = ["all", "completed", "work-in-progress"];
 
   const [activeFilters, setActiveFilters] = useState<CraftStatus[]>(
     defaultFilters ?? status,
