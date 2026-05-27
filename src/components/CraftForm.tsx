@@ -145,8 +145,9 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
           const url = await uploadCraftPhoto(file, user.uid);
           newPhotos.push({ id: crypto.randomUUID(), url, alt: file.name });
         } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
           console.error('Photo upload failed:', err);
-          failed.push(file.name);
+          failed.push(`${file.name}: ${msg}`);
         }
       }),
     );
