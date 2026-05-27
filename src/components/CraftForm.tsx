@@ -399,7 +399,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
         </div>
         <label className="mt-3 block">
           <span className="sr-only">Upload photos</span>
-          <input className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-ghibli-deep file:px-4 file:py-2 file:font-semibold file:text-white disabled:opacity-50" type="file" accept="image/*" multiple disabled={uploading} onChange={(event) => void handleFileChange(event.target.files)} />
+          <input className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-ghibli-deep file:px-4 file:py-2 file:font-semibold file:text-white disabled:opacity-50" type="file" accept="image/*,.heic,.heif" multiple disabled={uploading} onChange={(event) => void handleFileChange(event.target.files)} />
         </label>
         {uploading ? <p className="mt-2 text-sm text-ghibli-forest">Uploading photos...</p> : null}
         {photos.length > 0 ? (
