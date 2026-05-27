@@ -10,6 +10,10 @@ service cloud.firestore {
       allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
 
+    match /mail/{docId} {
+      allow create: if request.auth != null;
+    }
+
     match /friendships/{friendshipId} {
       allow read: if request.auth != null && (
         resource.data.fromUserId == request.auth.uid ||

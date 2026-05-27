@@ -1,18 +1,19 @@
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { CraftForm } from '../components/CraftForm';
 import { StatusBadge } from '../components/StatusBadge';
+import { useAuth } from '../hooks/useAuth';
 import { useCrafts } from '../hooks/useCrafts';
-import { useFriends } from '../hooks/useFriends';
-import { updateSharedWith } from '../services/craftService';
+import { updateIsPublic, updateSharedWith } from '../services/craftService';
+import { sendCraftShareEmail } from '../services/emailService';
 import type { Craft, CraftInput, CraftStatus } from '../types/Craft';
 import { CircularProgress } from '../components/ProgressCircle';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 
 export const CraftDetailPage = () => {
   const { craftId } = useParams();
   const navigate = useNavigate();
   const { crafts, editCraft, removeCraft } = useCrafts();
-  const { friends } = useFriends();
+  const { user } = useAuth();
 
   const [selectedInspirationCraft, setSelectedInspirationCraft] = useState<Craft | null>(null);
   const [editingCraft, setEditingCraft] = useState(false);
@@ -24,6 +25,10 @@ export const CraftDetailPage = () => {
 
   const [progress, setProgress] = useState(0);
   const [progressReady, setProgressReady] = useState(false);
+  const [shareEmail, setShareEmail] = useState('');
+  const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (craft) {
@@ -84,12 +89,42 @@ export const CraftDetailPage = () => {
     navigate('/');
   };
 
-  const toggleShare = async (email: string) => {
+  const handleShareWithEmail = async (e: FormEvent) => {
+    e.preventDefault();
+    const email = shareEmail.trim().toLowerCase();
+    if (!email) return;
+    setSharing(true);
+    setShareError('');
+    try {
+      const current = craft.sharedWith ?? [];
+      if (!current.includes(email)) {
+        await updateSharedWith(craft.id, [...current, email]);
+      }
+      const fromName = user?.displayName ?? user?.email ?? 'Someone';
+      const fromEmail = user?.email ?? '';
+      const craftUrl = `${window.location.origin}/public/${craft.id}`;
+      await sendCraftShareEmail(fromName, fromEmail, email, craft.title, craftUrl);
+      setShareEmail('');
+    } catch {
+      setShareError('Could not share. Please try again.');
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const revokeAccess = async (email: string) => {
     const current = craft.sharedWith ?? [];
-    const next = current.includes(email)
-      ? current.filter((e) => e !== email)
-      : [...current, email];
-    await updateSharedWith(craft.id, next);
+    await updateSharedWith(craft.id, current.filter((e) => e !== email));
+  };
+
+  const togglePublic = async () => {
+    await updateIsPublic(craft.id, !craft.isPublic);
+  };
+
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(`${window.location.origin}/public/${craft.id}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const photosPerLine = 3;
@@ -340,29 +375,75 @@ export const CraftDetailPage = () => {
         <aside className="space-y-4">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
-            {friends.length === 0 ? (
-              <p className="mt-3 text-sm text-stone-500">
-                Add friends on the Friends page to share this craft.
-              </p>
-            ) : (
-              <ul className="mt-3 space-y-2">
-                {friends.map((friend) => {
-                  const isShared = craft.sharedWith?.includes(friend.toEmail) ?? false;
-                  return (
-                    <li key={friend.id} className="flex items-center justify-between">
-                      <span className="truncate text-sm text-stone-700">{friend.toEmail}</span>
+
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-stone-700">Public link</p>
+                <p className="text-xs text-stone-500">Anyone with the link can view</p>
+              </div>
+              <button
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${craft.isPublic ? 'bg-ghibli-forest' : 'bg-stone-300'}`}
+                type="button"
+                role="switch"
+                aria-checked={craft.isPublic}
+                aria-label={craft.isPublic ? 'Disable public link' : 'Enable public link'}
+                onClick={() => void togglePublic()}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition-transform ${craft.isPublic ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            </div>
+
+            {craft.isPublic ? (
+              <button
+                className="mt-3 flex w-full items-center justify-between gap-2 rounded-2xl bg-ghibli-light px-4 py-3 text-sm text-stone-700 hover:bg-ghibli-soft"
+                type="button"
+                onClick={() => void copyLink()}
+              >
+                <span className="truncate font-mono text-xs">{window.location.origin}/public/{craft.id}</span>
+                <span className="shrink-0 font-semibold text-ghibli-forest">{copied ? 'Copied!' : 'Copy'}</span>
+              </button>
+            ) : null}
+
+            <form className="mt-5" onSubmit={(e) => void handleShareWithEmail(e)}>
+              <p className="mb-2 text-sm font-semibold text-stone-700">Share with someone</p>
+              <div className="flex gap-2">
+                <input
+                  className="flex-1 rounded-2xl border border-stone-200 px-3 py-2 text-sm focus:border-ghibli-sage focus:outline-none"
+                  type="email"
+                  placeholder="friend@example.com"
+                  value={shareEmail}
+                  onChange={(e) => setShareEmail(e.target.value)}
+                />
+                <button
+                  className="shrink-0 rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest disabled:opacity-50"
+                  type="submit"
+                  disabled={sharing || !shareEmail.trim()}
+                >
+                  {sharing ? '...' : 'Send'}
+                </button>
+              </div>
+              {shareError ? <p className="mt-2 text-xs text-red-600">{shareError}</p> : null}
+            </form>
+
+            {(craft.sharedWith ?? []).length > 0 ? (
+              <div className="mt-5">
+                <p className="mb-2 text-sm font-semibold text-stone-700">People with access</p>
+                <ul className="space-y-2">
+                  {(craft.sharedWith ?? []).map((email) => (
+                    <li key={email} className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm text-stone-700">{email}</span>
                       <button
-                        className={`ml-3 shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${isShared ? 'bg-ghibli-forest text-white hover:bg-ghibli-deep' : 'border border-stone-300 text-stone-700 hover:bg-ghibli-light'}`}
+                        className="shrink-0 rounded-full border border-stone-300 px-3 py-1 text-xs font-semibold text-stone-600 hover:border-red-300 hover:text-red-600"
                         type="button"
-                        onClick={() => void toggleShare(friend.toEmail)}
+                        onClick={() => void revokeAccess(email)}
                       >
-                        {isShared ? 'Shared ✓' : 'Share'}
+                        Remove
                       </button>
                     </li>
-                  );
-                })}
-              </ul>
-            )}
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </section>
         </aside>
       </section>
