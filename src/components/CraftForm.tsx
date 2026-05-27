@@ -309,7 +309,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
         <div className="flex items-center justify-between gap-3">
           <div>
             <h3 className="font-bold text-ghibli-deep">Inspiration sources</h3>
-            <p className="text-sm text-stone-600">Add an external link or connect an existing inspiration craft.</p>
+            <p className="text-sm text-stone-600">Add an external link or attach an existing inspiration.</p>
           </div>
           <button className="rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest" type="button" onClick={addSource}>
             + Add
@@ -335,7 +335,7 @@ export const CraftForm = ({ initialCraft, submitLabel, onSubmit }: CraftFormProp
                   }}
                 >
                   <option value="external">External link</option>
-                  <option value="craft">Existing craft</option>
+                  <option value="craft">Existing inspo</option>
                 </select>
 
                 {source.type === 'external' ? (

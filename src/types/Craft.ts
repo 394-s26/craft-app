@@ -12,6 +12,7 @@ export type CraftSource =
       type: 'external';
       url: string;
       label?: string;
+      imageUrl?: string;
     }
   | {
       id: string;
