@@ -4,7 +4,7 @@ import { InspoForm } from '../components/InspoForm';
 import { CraftForm } from '../components/CraftForm';
 import { useCrafts } from '../hooks/useCrafts';
 import type { CraftStatus, CraftInput } from '../types/Craft';
-import { formatStatus } from '../utilities/formatStatus';
+// import { formatStatus } from '../utilities/formatStatus';
 import { formatProgressFilter } from '@/utilities/formatProgressFilter';
 
 interface FolderPageProps {
@@ -14,7 +14,10 @@ interface FolderPageProps {
   defaultFilters?: CraftStatus[];
 }
 
-const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = {
+// type ProgressFilterOption = 'all' | 'wip' | 'completed';
+type ProgressFilterOption = 'all' | CraftStatus;
+
+const statusStyles: Record<ProgressFilterOption, { active: string; inactive: string }> = {
   inspiration: {
     active: 'border-blue-600 bg-blue-600 text-white',
     inactive: 'border-stone-300 bg-white text-stone-700 hover:border-blue-600',
@@ -27,12 +30,13 @@ const statusStyles: Record<CraftStatus, { active: string; inactive: string }> = 
     active: 'border-ghibli-deep bg-ghibli-deep text-white',
     inactive: 'border-stone-300 bg-white text-stone-700 hover:border-ghibli-deep',
   },
+  all: {
+    active: 'border-ghibli-deep bg-ghibli-deep text-white',
+    inactive: 'border-stone-300 bg-white text-stone-700 hover:border-ghibli-deep',
+  }
 };
 
 type VisibilityFilter = 'all' | 'public' | 'private';
-
-// type ProgressFilterOption = 'all' | 'wip' | 'completed';
-type ProgressFilterOption = 'all' | CraftStatus;
 
 export const FolderPage = ({ status, title, description, defaultFilters }: FolderPageProps) => {
   const { crafts, loading, error, addCraft } = useCrafts();
@@ -58,6 +62,9 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
 
   const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';
 
+  const toggleFilter = (s: ProgressFilterOption) => {
+    setProgressFilter(s);
+  };
   // const toggleFilter = (s: CraftStatus) => {
   //   setActiveFilters((prev) =>
   //     prev.includes(s)
@@ -119,7 +126,8 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
                 type="button"
                 onClick={() => toggleFilter(s)}
                 className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive
+                  progressFilter === s ? statusStyles[s].active : statusStyles[s].inactive
+                  // activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive
                 }`}
               >
                 {formatProgressFilter(s)}
