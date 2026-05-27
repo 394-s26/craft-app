@@ -1,4 +1,4 @@
-import { Lightbulb, LogOut, Scissors, Settings, ShoppingCart, User, Users } from 'lucide-react';
+import { Lightbulb, LogOut, Scissors, Settings, ShoppingCart, Spool, User, Users } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -28,7 +28,7 @@ export const NavBar = () => {
             Inspo
           </NavLink>
           <NavLink className={linkClass} to="/work">
-            <Scissors size={15} />
+            <Spool size={15} />
             My Work
           </NavLink>
           <NavLink className={linkClass} to="/shopping-list">

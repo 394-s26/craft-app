@@ -1,4 +1,4 @@
-import { Lightbulb, Pencil, Scissors } from 'lucide-react';
+import { Lightbulb, Pencil, Spool } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { CraftGrid } from '../components/CraftGrid';
 import { InspoForm } from '../components/InspoForm';
@@ -84,7 +84,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
     setShowNewCraftModal(false);
   };
 
-  const FolderIcon = isInspirationOnly ? Lightbulb : Scissors;
+  const FolderIcon = isInspirationOnly ? Lightbulb : Spool;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">

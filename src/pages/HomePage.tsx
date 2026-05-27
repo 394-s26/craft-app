@@ -1,4 +1,4 @@
-import { CheckCircle, Lightbulb, Pencil, Scissors } from 'lucide-react';
+import { CheckCircle, Lightbulb, Pencil, Spool } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCrafts } from '../hooks/useCrafts';
 
@@ -14,7 +14,7 @@ export const HomePage = () => {
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/inspiration">
           <h2 className="flex items-center gap-2 font-bold text-ghibli-deep">
-            <Lightbulb size={18} className="text-ghibli-sage shrink-0" />
+            <Lightbulb size={18} className="shrink-0 text-ghibli-sage" />
             Inspiration crafts
           </h2>
           <p className="mt-3 text-4xl font-black text-ghibli-deep">{inspirationCount}</p>
@@ -22,7 +22,7 @@ export const HomePage = () => {
         </Link>
         <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work">
           <h2 className="flex items-center gap-2 font-bold text-ghibli-deep">
-            <Scissors size={18} className="text-ghibli-sage shrink-0" />
+            <Spool size={18} className="shrink-0 text-ghibli-sage" />
             Works in progress
           </h2>
           <p className="mt-3 text-4xl font-black text-ghibli-deep">{progressCount}</p>
@@ -30,7 +30,7 @@ export const HomePage = () => {
         </Link>
         <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work">
           <h2 className="flex items-center gap-2 font-bold text-ghibli-deep">
-            <CheckCircle size={18} className="text-ghibli-sage shrink-0" />
+            <CheckCircle size={18} className="shrink-0 text-ghibli-sage" />
             Completed crafts
           </h2>
           <p className="mt-3 text-4xl font-black text-ghibli-deep">{completedCount}</p>
