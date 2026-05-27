@@ -9,12 +9,14 @@ export const ShoppingListPage = () => {
   );
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-2 flex items-center gap-3 text-3xl font-black text-ghibli-deep">
-        <ShoppingCart size={28} />
-        Shopping List
-      </h1>
-      <p className="mb-8 text-stone-500">Materials needed across all your projects.</p>
+    <main className="mx-auto max-w-6xl px-4 py-10">
+      <section className="mb-8">
+        <h1 className="flex items-center gap-3 text-4xl font-black tracking-tight text-ghibli-deep">
+          <ShoppingCart size={30} />
+          Shopping List
+        </h1>
+        <p className="mt-3 text-stone-600">Materials needed across all your projects.</p>
+      </section>
       <ShoppingList crafts={myWorkCrafts} />
     </main>
   );
