@@ -171,7 +171,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setShowNewCraftModal(false); }}
         >
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-8 shadow-xl">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-8 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-2xl font-black tracking-tight text-ghibli-deep">New craft</h2>
               <button
