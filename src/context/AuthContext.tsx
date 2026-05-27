@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, type PropsWithChildren } from 'react';
-import { signInWithGoogle, signOutUser, subscribeToAuthChanges } from '../services/authService';
+import { deleteAccount as deleteAccountService, signInWithGoogle, signOutUser, subscribeToAuthChanges } from '../services/authService';
 import type { AuthUser } from '../types/AuthUser';
 
 interface AuthContextValue {
@@ -8,6 +8,7 @@ interface AuthContextValue {
   error: string | null;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -46,5 +47,16 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  return <AuthContext value={{ user, loading, error, signIn, signOut }}>{children}</AuthContext>;
+  const deleteAccount = async () => {
+    setError(null);
+    try {
+      await deleteAccountService();
+      setUser(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not delete account.');
+      throw err;
+    }
+  };
+
+  return <AuthContext value={{ user, loading, error, signIn, signOut, deleteAccount }}>{children}</AuthContext>;
 };

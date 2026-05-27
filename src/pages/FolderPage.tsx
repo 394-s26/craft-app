@@ -1,3 +1,4 @@
+import { Lightbulb, Pencil, Scissors } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { CraftGrid } from '../components/CraftGrid';
 import { InspoForm } from '../components/InspoForm';
@@ -83,20 +84,26 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
     setShowNewCraftModal(false);
   };
 
+  const FolderIcon = isInspirationOnly ? Lightbulb : Scissors;
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <section className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">{title}</h1>
+          <h1 className="flex items-center gap-3 text-4xl font-black tracking-tight text-ghibli-deep">
+            <FolderIcon size={30} />
+            {title}
+          </h1>
           <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
         </div>
         {!isInspirationOnly && (
           <button
             type="button"
             onClick={() => setShowNewCraftModal(true)}
-            className="shrink-0 rounded-full bg-ghibli-deep px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-80"
+            className="flex shrink-0 items-center gap-2 rounded-full bg-ghibli-deep px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-80"
           >
-            + New craft
+            <Pencil size={14} />
+            New craft
           </button>
         )}
       </section>

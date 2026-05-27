@@ -10,6 +10,7 @@ import { FriendsPage } from './pages/FriendsPage';
 import { HomePage } from './pages/HomePage';
 import { NewCraftPage } from './pages/NewCraftPage';
 import { PublicCraftPage } from './pages/PublicCraftPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { ShoppingListPage } from './pages/ShoppingListPage';
 
 export const App = () => (
@@ -33,6 +34,7 @@ export const App = () => (
                     <Route path="/friends" element={<FriendsPage />} />
                     <Route path="/new" element={<NewCraftPage />} />
                     <Route path="/crafts/:craftId" element={<CraftDetailPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </div>
