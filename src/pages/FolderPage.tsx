@@ -10,7 +10,6 @@ import { formatProgressFilter } from '@/utilities/formatProgressFilter';
 interface FolderPageProps {
   status: CraftStatus[];
   title: string;
-  description: string;
   defaultFilters?: CraftStatus[];
 }
 
@@ -37,7 +36,7 @@ const statusStyles: Record<ProgressFilterOption, { active: string; inactive: str
 
 type VisibilityFilter = 'all' | 'public' | 'private';
 
-export const FolderPage = ({ status, title, description, defaultFilters }: FolderPageProps) => {
+export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) => {
   const { crafts, loading, error, addCraft } = useCrafts();
 
   const [progressFilter, setProgressFilter] = useState<ProgressFilterOption>('all');
@@ -88,24 +87,24 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <section className="mb-8 flex items-start justify-between gap-4">
-        <div>
+      <section className="mb-8 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
           <h1 className="flex items-center gap-3 text-4xl font-black tracking-tight text-ghibli-deep">
             <FolderIcon size={30} />
             {title}
           </h1>
-          <p className="mt-3 max-w-2xl text-stone-600">{description}</p>
+
+          {!isInspirationOnly && (
+            <button
+              type="button"
+              onClick={() => setShowNewCraftModal(true)}
+              className="flex shrink-0 items-center gap-2 rounded-full bg-ghibli-deep px-5 py-2 text-md font-semibold text-white transition-opacity hover:opacity-80"
+            >
+              <Pencil size={20} />
+              New craft
+            </button>
+          )}
         </div>
-        {!isInspirationOnly && (
-          <button
-            type="button"
-            onClick={() => setShowNewCraftModal(true)}
-            className="flex shrink-0 items-center gap-2 rounded-full bg-ghibli-deep px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-80"
-          >
-            <Pencil size={14} />
-            New craft
-          </button>
-        )}
       </section>
 
       {isInspirationOnly && (
@@ -159,8 +158,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
         <div className={isInspirationOnly ? '[&>section]:items-start' : ''}>
           <CraftGrid
             crafts={filteredCrafts}
-            emptyTitle={`No ${title.toLowerCase()} yet`}
-            emptyMessage="Add a craft and choose this folder to see it here."
+            emptyMessage="Nothing here yet"
           />
         </div>
       ) : null}
@@ -171,7 +169,7 @@ export const FolderPage = ({ status, title, description, defaultFilters }: Folde
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setShowNewCraftModal(false); }}
         >
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-8 shadow-xl">
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-8 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-2xl font-black tracking-tight text-ghibli-deep">New craft</h2>
               <button

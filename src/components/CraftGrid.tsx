@@ -4,13 +4,12 @@ import { EmptyState } from './EmptyState';
 
 interface CraftGridProps {
   crafts: Craft[];
-  emptyTitle: string;
   emptyMessage: string;
 }
 
-export const CraftGrid = ({ crafts, emptyTitle, emptyMessage }: CraftGridProps) => {
+export const CraftGrid = ({ crafts, emptyMessage }: CraftGridProps) => {
   if (crafts.length === 0) {
-    return <EmptyState title={emptyTitle} message={emptyMessage} />;
+    return <EmptyState message={emptyMessage} />;
   }
 
   return (

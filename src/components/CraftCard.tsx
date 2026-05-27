@@ -82,7 +82,7 @@ export const CraftCard = ({ craft }: CraftCardProps) => {
       </Link>
       {showConfirm && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40">
-          <div className="rounded-2xl bg-white p-6 shadow-xl flex flex-col items-center">
+          <div className="rounded-2xl bg-white p-3 shadow-xl flex flex-col items-center">
             <p className="mb-4 text-stone-900 font-semibold">Delete this inspiration?</p>
             <div className="flex gap-3">
               <button
