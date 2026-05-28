@@ -39,7 +39,9 @@ type VisibilityFilter = 'all' | 'public' | 'private';
 export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) => {
   const { crafts, loading, error, addCraft } = useCrafts();
 
-  const [progressFilter, setProgressFilter] = useState<ProgressFilterOption>('all');
+  const defaultProgressFilter = (defaultFilters && defaultFilters?.length === 1) ?defaultFilters[0] : 'all';
+
+  const [progressFilter, setProgressFilter] = useState<ProgressFilterOption>(defaultProgressFilter);
   useEffect(() => {
     if (progressFilter === 'all') {
       setActiveFilters(['completed', "work-in-progress"]);

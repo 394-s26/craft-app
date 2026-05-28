@@ -28,6 +28,8 @@ export const App = () => (
                     <Route path="/" element={<HomePage />} />
                     <Route path="/inspiration" element={<FolderPage status={["inspiration"]} title="Inspiration" />} />
                     <Route path="/work" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" />} />
+                    <Route path="/work/completed" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" defaultFilters={['completed']}/>} />
+                    <Route path="/work/wip" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" defaultFilters={['work-in-progress']}/>} />
                     <Route path="/shopping-list" element={<ShoppingListPage />} />
                     <Route path="/friends" element={<FriendsPage />} />
                     <Route path="/new" element={<NewCraftPage />} />

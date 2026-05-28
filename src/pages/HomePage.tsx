@@ -20,7 +20,7 @@ export const HomePage = () => {
           <p className="mt-3 text-4xl font-black text-ghibli-deep">{inspirationCount}</p>
           <p className="mt-2 text-sm text-stone-600">Save ideas from Instagram, Etsy, patterns, blogs, or your own sketches.</p>
         </Link>
-        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work">
+        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work/wip">
           <h2 className="flex items-center gap-2 font-bold text-ghibli-deep">
             <Spool size={18} className="shrink-0 text-ghibli-sage" />
             Works in progress
@@ -28,7 +28,7 @@ export const HomePage = () => {
           <p className="mt-3 text-4xl font-black text-ghibli-deep">{progressCount}</p>
           <p className="mt-2 text-sm text-stone-600">Track current project photos, descriptions, and materials.</p>
         </Link>
-        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work">
+        <Link className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm hover:shadow-md" to="/work/completed">
           <h2 className="flex items-center gap-2 font-bold text-ghibli-deep">
             <CheckCircle size={18} className="shrink-0 text-ghibli-sage" />
             Completed crafts
