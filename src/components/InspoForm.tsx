@@ -284,7 +284,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
                 className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-stone-500 transition-colors hover:bg-stone-100 disabled:opacity-50"
               >
                 {saving ? <Loader2 size={13} className="animate-spin" /> : null}
-                {saving ? 'Saving…' : 'Close'}
+                {saving ? 'Saving…' : 'Save'}
               </button>
             </div>
           </div>
