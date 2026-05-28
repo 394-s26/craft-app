@@ -40,6 +40,21 @@ export const CraftDetailPage = () => {
   }, [craft]);
 
   useEffect(() => {
+    if (!craftId) return;
+
+    const existing: string[] = JSON.parse(
+      localStorage.getItem('recentCrafts') || '[]'
+    );
+
+    const updated = [
+      craftId,
+      ...existing.filter((id) => id !== craftId),
+    ].slice(0, 3);
+
+    localStorage.setItem('recentCrafts', JSON.stringify(updated));
+  }, [craftId]);
+
+  useEffect(() => {
     if (!craft || !progressReady) return;
 
     const nextStatus: CraftStatus =
