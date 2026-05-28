@@ -15,7 +15,6 @@ export const ShoppingListPage = () => {
           <ShoppingCart size={30} />
           Shopping List
         </h1>
-        <p className="mt-3 text-stone-600">Materials needed across all your projects.</p>
       </section>
       <ShoppingList crafts={myWorkCrafts} />
     </main>
