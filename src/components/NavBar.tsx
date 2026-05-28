@@ -54,8 +54,8 @@ export const NavBar = () => {
 
             {menuOpen ? (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                <div className="absolute right-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-ghibli-soft bg-white shadow-lg">
+                <div className="fixed inset-0 z-10 h-screen" onClick={() => setMenuOpen(false)} />
+                <div className="absolute right-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-ghibli-soft bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
                   <div className="px-4 py-4">
                     <p className="text-lg font-black leading-tight text-ghibli-deep">
                       {user.displayName ?? user.email}
