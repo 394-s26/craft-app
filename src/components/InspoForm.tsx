@@ -154,7 +154,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         className={`
-          relative mx-auto max-w-xl rounded-2xl border bg-white transition-all duration-200
+          relative mx-auto max-w-2xl rounded-2xl border bg-white transition-all duration-200
           ${expanded
             ? 'border-stone-200 shadow-[0_4px_24px_rgba(0,0,0,0.10)]'
             : 'cursor-text border-stone-200 shadow-sm hover:shadow-md'
@@ -284,7 +284,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
                 className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-stone-500 transition-colors hover:bg-stone-100 disabled:opacity-50"
               >
                 {saving ? <Loader2 size={13} className="animate-spin" /> : null}
-                {saving ? 'Saving…' : 'Close'}
+                {saving ? 'Saving…' : 'Save'}
               </button>
             </div>
           </div>

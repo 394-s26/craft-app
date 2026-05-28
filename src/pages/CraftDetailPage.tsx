@@ -8,6 +8,7 @@ import { sendCraftShareEmail } from '../services/emailService';
 import type { Craft, CraftInput, CraftStatus } from '../types/Craft';
 import { CircularProgress } from '../components/ProgressCircle';
 import { useEffect, useState, type FormEvent } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 export const CraftDetailPage = () => {
   const { craftId } = useParams();
@@ -175,19 +176,21 @@ export const CraftDetailPage = () => {
           ) : null}
 
           <button
-            className="ml-auto rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
+            className="ml-auto flex items-center gap-2 rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
             type="button"
             onClick={() => setEditingCraft(true)}
           >
+            <Pencil size={16} />
             Edit Craft
           </button>
 
           <button
-              className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
-              type="button"
-              onClick={() => setShowDeleteConfirm(true)}
-            >
-              Delete Craft
+            className="flex items-center gap-2 rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <Trash2 size={16} />
+            Delete Craft
           </button>
         </div>
 
