@@ -158,7 +158,7 @@ export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) =
         <div className={isInspirationOnly ? '[&>section]:items-start' : ''}>
           <CraftGrid
             crafts={filteredCrafts}
-            emptyMessage="Nothing here yet"
+            emptyMessage="Nothing here yet, add inspiration above."
           />
         </div>
       ) : null}

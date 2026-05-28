@@ -22,19 +22,26 @@ export const App = () => (
           <AuthGate>
             <CraftProvider>
               <FriendProvider>
-                <div className="min-h-screen bg-ghibli-light text-stone-900">
+                <div className="min-h-screen flex flex-col bg-ghibli-light text-stone-900">
                   <NavBar />
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/inspiration" element={<FolderPage status={["inspiration"]} title="Inspiration" />} />
-                    <Route path="/work" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" />} />
-                    <Route path="/shopping-list" element={<ShoppingListPage />} />
-                    <Route path="/friends" element={<FriendsPage />} />
-                    <Route path="/new" element={<NewCraftPage />} />
-                    <Route path="/crafts/:craftId" element={<CraftDetailPage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
+
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/inspiration" element={<FolderPage status={["inspiration"]} title="Inspiration" />} />
+                      <Route path="/work" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" />} />
+                      <Route path="/shopping-list" element={<ShoppingListPage />} />
+                      <Route path="/friends" element={<FriendsPage />} />
+                      <Route path="/new" element={<NewCraftPage />} />
+                      <Route path="/crafts/:craftId" element={<CraftDetailPage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </main>
+
+                  <footer className="py-4 text-center text-sm text-stone-500">
+                    Made with React.
+                  </footer>
                 </div>
               </FriendProvider>
             </CraftProvider>
