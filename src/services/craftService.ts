@@ -79,12 +79,11 @@ export const subscribeToCrafts = (
 
 export const createCraft = async (userId: string, input: CraftInput): Promise<string> => {
   try {
-    const docRef = await addDoc(craftsCollection, {
-      ...input,
-      userId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    const data: Record<string, unknown> = { userId, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+    for (const [k, v] of Object.entries(input)) {
+      if (v !== undefined) data[k] = v;
+    }
+    const docRef = await addDoc(craftsCollection, data);
 
     return docRef.id;
   } catch (error) {
@@ -93,12 +92,12 @@ export const createCraft = async (userId: string, input: CraftInput): Promise<st
 };
 
 export const updateCraft = async (craftId: string, input: CraftInput): Promise<void> => {
-  //console.log('Saving to Firebase:', input);
   try {
-    await updateDoc(doc(db, 'crafts', craftId), {
-      ...input,
-      updatedAt: serverTimestamp(),
-    });
+    const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+    for (const [k, v] of Object.entries(input)) {
+      if (v !== undefined) data[k] = v;
+    }
+    await updateDoc(doc(db, 'crafts', craftId), data);
   } catch (error) {
     throw error instanceof Error ? error : new Error('Could not update craft.');
   }
