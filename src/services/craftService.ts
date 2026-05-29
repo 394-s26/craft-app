@@ -27,6 +27,7 @@ const mapSources = (data: DocumentData): CraftSource[] => {
             type: 'external',
             url: String(source.url),
             ...(source.label ? { label: String(source.label) } : {}),
+            ...(source.imageUrl ? { imageUrl: String(source.imageUrl) } : {}),
           };
         }
 
@@ -42,17 +43,6 @@ const mapSources = (data: DocumentData): CraftSource[] => {
       })
       .filter((source): source is CraftSource => source !== null);
   }
-
-  if (data.sourceUrl) {
-    return [
-      {
-        id: crypto.randomUUID(),
-        type: 'external',
-        url: String(data.sourceUrl),
-      },
-    ];
-  }
-
   return [];
 };
 
@@ -64,7 +54,6 @@ const mapCraft = (id: string, data: DocumentData): Craft => ({
   materials: Array.isArray(data.materials) ? data.materials.map(String) : [],
   photos: Array.isArray(data.photos) ? data.photos : [],
   status: data.status as CraftStatus,
-  sourceUrl: data.sourceUrl ? String(data.sourceUrl) : "",
   sources: mapSources(data),
   progress: typeof data.progress === 'number' ? data.progress : 0,
   isPublic: data.isPublic === true,

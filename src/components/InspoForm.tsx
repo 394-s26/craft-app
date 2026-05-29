@@ -8,8 +8,8 @@ interface InspoFormProps {
   onSave: (input: CraftInput) => Promise<void>;
 }
 
-function isEmpty(title: string, notes: string, photos: CraftPhoto[], sourceUrl: string) {
-  return !title.trim() && !notes.trim() && photos.length === 0 && !sourceUrl.trim();
+function isEmpty(title: string, notes: string, photos: CraftPhoto[], sources: { url: string }[]) {
+  return !title.trim() && !notes.trim() && photos.length === 0 && sources.length === 0;
 }
 
 export const InspoForm = ({ onSave }: InspoFormProps) => {
@@ -49,7 +49,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
 
   const handleSave = useCallback(async () => {
     if (saving || uploading) return;
-    if (isEmpty(title, notes, photos, sourceUrl)) {
+    if (isEmpty(title, notes, photos, [{ url: sourceUrl }])) {
       reset();
       return;
     }
@@ -57,14 +57,13 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
     setSaving(true);
     setError(null);
     try {
-      const trimmedSourceUrl = sourceUrl.trim();
       await onSave({
         title: title.trim() || 'Untitled inspiration',
         description: notes.trim(),
         materials: [],
         photos,
         status: 'inspiration',
-        ...(trimmedSourceUrl ? { sourceUrl: trimmedSourceUrl } : {}),
+        sourceUrl,
         isPublic: false,
       });
       reset();
@@ -236,7 +235,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
               className="w-full resize-none px-4 py-2 text-sm text-stone-700 placeholder-stone-300 outline-none"
             />
 
-            {/* Source URL (optional) */}
+            {/* Source URL (optional) */} 
             <div className="flex items-center gap-2 border-t border-stone-100 px-4 py-2">
               <Link size={13} className="shrink-0 text-stone-300" />
               <input

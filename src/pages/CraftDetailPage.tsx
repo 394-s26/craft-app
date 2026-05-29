@@ -163,12 +163,7 @@ export const CraftDetailPage = () => {
 
   const folderRoute = craft.status === 'work-in-progress' || craft.status === 'completed' ? 'work' : craft.status;
 
-  const sources =
-    craft.sources?.length
-      ? craft.sources
-      : craft.sourceUrl
-        ? [{ id: 'source-url', type: 'external' as const, url: craft.sourceUrl }]
-        : [];
+  const sources = craft.sources?.length ? craft.sources : [];
 
   const currentPhotos = craft.photos.slice(currentPhotoIndex, currentPhotoIndex + photosPerLine);
 
@@ -283,10 +278,10 @@ export const CraftDetailPage = () => {
                         onClick={() => window.open(source.url, '_blank')}
                       >
                         <div className="w-full h-100 bg-stone-100 rounded-2xl flex items-center justify-center overflow-hidden mb-2">
-                          {source ? ( // todo add photo to external source type
+                          {source.imageUrl ? (
                             <img
-                              src={source.url} // todo add photo to external source type
-                              alt="External source"
+                              src={source.imageUrl}
+                              alt={'Image preview of external source link'}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -536,10 +531,10 @@ export const CraftDetailPage = () => {
               </button>
             </div>
 
-            {selectedInspirationCraft.sourceUrl ? (
+            {selectedInspirationCraft.sources && selectedInspirationCraft.sources.length > 0 && selectedInspirationCraft.sources[0].type === 'external' ? (
               <a
                 className="mt-5 inline-flex font-semibold text-ghibli-forest underline"
-                href={selectedInspirationCraft.sourceUrl}
+                href={selectedInspirationCraft.sources[0].url}
                 target="_blank"
                 rel="noreferrer"
               >
