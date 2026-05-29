@@ -13,6 +13,7 @@ export const CraftCard = ({ craft }: CraftCardProps) => {
   const { removeCraft } = useCrafts();
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Prevent navigation when clicking trash
   const handleDelete = async (e: React.MouseEvent) => {
@@ -48,13 +49,17 @@ export const CraftCard = ({ craft }: CraftCardProps) => {
       )}
       <Link className="block" to={`/crafts/${craft.id}`} tabIndex={-1}>
         {coverPhoto || craft.status !== 'inspiration' ? (
-          <div className="h-56 bg-ghibli-soft">
+          <div className="relative h-56 bg-ghibli-soft">
             {coverPhoto ? (
-              <img
-                className="h-full w-full object-cover"
-                src={coverPhoto.url}
-                alt={coverPhoto.alt}
-              />
+              <>
+                {!imgLoaded && <div className="absolute inset-0 animate-pulse bg-stone-200" />}
+                <img
+                  className={`h-full w-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  src={coverPhoto.url}
+                  alt={coverPhoto.alt}
+                  onLoad={() => setImgLoaded(true)}
+                />
+              </>
             ) : (
               <div className="flex h-full items-center justify-center text-stone-500">
                 No photo yet
