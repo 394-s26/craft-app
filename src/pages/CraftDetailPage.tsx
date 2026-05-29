@@ -93,12 +93,6 @@ export const CraftDetailPage = () => {
     await editCraft(craft.id, input);
     setEditingCraft(false);
   };
-  {/*
-  const handleMove = async (status: CraftStatus) => {
-    await moveCraft(craft.id, status);
-    navigate(`/${status === 'work-in-progress' || status === 'completed' ? 'work' : status}`);
-  };
-  */}
 
   const handleDelete = async () => {
     await removeCraft(craft.id);
@@ -191,7 +185,7 @@ export const CraftDetailPage = () => {
             onClick={() => setEditingCraft(true)}
           >
             <Pencil size={16} />
-            Edit Craft
+            {craft.status === 'inspiration' ? 'Edit Inspo' : 'Edit Craft'}
           </button>
 
           <button
@@ -200,7 +194,7 @@ export const CraftDetailPage = () => {
             onClick={() => setShowDeleteConfirm(true)}
           >
             <Trash2 size={16} />
-            Delete Craft
+            {craft.status === 'inspiration' ? 'Delete Inspo' : 'Delete Craft'}
           </button>
         </div>
 
@@ -260,7 +254,7 @@ export const CraftDetailPage = () => {
         )}
       </section>
 
-      {sources.length > 0 ? (
+      {craft.status !== 'inspiration' && sources.length > 0 ? (
         <section className="mt-8 h-150 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
           <h2 className="text-2xl font-bold text-ghibli-deep">Inspiration Sources</h2>
 
@@ -354,6 +348,23 @@ export const CraftDetailPage = () => {
               </div>
             )}
           </div>
+        </section>
+      ) : null}
+
+      {craft.status === 'inspiration' && craft.sourceUrl ? (
+        <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-ghibli-deep">
+            Original Inspo Source
+          </h2>
+
+          <a
+            href={craft.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center rounded-2xl bg-ghibli-light px-4 py-3 font-semibold text-ghibli-forest hover:underline"
+          >
+            Open → {craft.sourceUrl}
+          </a>
         </section>
       ) : null}
 
@@ -492,7 +503,11 @@ export const CraftDetailPage = () => {
           <div className="max-h-full w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit craft</h2>
+                {craft.status === 'inspiration' ? (
+                  <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit Inspo</h2>
+                ) : (
+                  <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit Craft</h2>
+                )}
                 <p className="mt-1 text-sm text-stone-500">Update the craft details, sources, materials, and photos.</p>
               </div>
 

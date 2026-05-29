@@ -54,6 +54,7 @@ const mapCraft = (id: string, data: DocumentData): Craft => ({
   materials: Array.isArray(data.materials) ? data.materials.map(String) : [],
   photos: Array.isArray(data.photos) ? data.photos : [],
   status: data.status as CraftStatus,
+  sourceUrl: data.sourceUrl ? String(data.sourceUrl) : undefined,
   sources: mapSources(data),
   progress: typeof data.progress === 'number' ? data.progress : 0,
   isPublic: data.isPublic === true,

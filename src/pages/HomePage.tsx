@@ -1,4 +1,4 @@
-import { CheckCircle, Lightbulb, Pencil, Spool } from 'lucide-react';
+import { CheckCircle, Lightbulb, Spool } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCrafts } from '../hooks/useCrafts';
 
