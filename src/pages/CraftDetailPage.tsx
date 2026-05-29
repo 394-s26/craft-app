@@ -303,12 +303,12 @@ export const CraftDetailPage = () => {
                       <div className="w-full h-100 bg-stone-100 rounded-2xl flex items-center justify-center overflow-hidden mb-2">
                         <img
                           src={linkedCraft?.photos[0]?.url}
-                          alt={linkedCraft?.photos[0]?.alt || linkedCraft?.title || 'Inspiration craft'}
+                          alt={linkedCraft?.photos[0]?.alt || linkedCraft?.title || 'Image could not be loaded'}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <p className="text-center font-semibold text-ghibli-forest text-sm">
-                        {linkedCraft?.title || 'View in Inspo'}
+                        {linkedCraft?.title || 'Inspo (deleted)'}
                       </p>
                     </button>
                   );
