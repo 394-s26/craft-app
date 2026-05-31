@@ -14,6 +14,7 @@ interface CraftFormProps {
   initialCraft?: Craft;
   submitLabel: string;
   onSubmit: (input: CraftInput) => Promise<void>;
+  inspirationMode?: boolean;
 }
 
 interface MaterialEntry {
@@ -53,6 +54,7 @@ export const CraftForm = ({
   initialCraft,
   submitLabel,
   onSubmit,
+  inspirationMode = false,
 }: CraftFormProps) => {
   const { user } = useAuth();
   const { crafts } = useCrafts();
@@ -333,7 +335,7 @@ export const CraftForm = ({
           placeholder="What are you making? What look are you going for?"
         />
       </label>
-
+      {!inspirationMode && (
       <div className="block">
         <span className="text-sm font-bold text-stone-700">Materials</span>
         {materials.length > 0 && (
@@ -424,7 +426,9 @@ export const CraftForm = ({
           </button>
         </div>
       </div>
+      )}
 
+      {!inspirationMode && (
       <section className="rounded-2xl bg-ghibli-light p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -556,7 +560,8 @@ export const CraftForm = ({
           </p>
         )}
       </section>
-
+      )}
+      
       <section className="rounded-2xl bg-ghibli-light p-4">
         <h3 className="font-bold text-ghibli-deep">Photos</h3>
         <div
