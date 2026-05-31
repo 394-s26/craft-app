@@ -1,6 +1,8 @@
 import { CheckCircle, Lightbulb, Spool } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCrafts } from '../hooks/useCrafts';
+import { CraftGrid } from '@/components/CraftGrid';
+import type { Craft } from '@/types/Craft';
 
 export const HomePage = () => {
   const { crafts } = useCrafts();
@@ -10,10 +12,11 @@ export const HomePage = () => {
   const recentCraftIds: string[] = JSON.parse(
     localStorage.getItem('recentCrafts') || '[]'
   );
+  
 
   const recentCrafts = recentCraftIds
-    .map((id) => crafts.find((c) => c.id === id))
-    .filter(Boolean);
+  .map((id) => crafts.find((c) => c.id === id))
+  .filter((craft): craft is Craft => craft !== undefined);
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
 
@@ -56,25 +59,10 @@ export const HomePage = () => {
             Recently viewed
           </h2>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {recentCrafts.map((craft) => (
-              <Link
-                key={craft!.id}
-                to={`/crafts/${craft!.id}`}
-                className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm hover:shadow-md"
-              >
-                <p className="font-semibold text-ghibli-deep">
-                  {craft!.title}
-                </p>
-
-                {craft!.description && (
-                  <p className="mt-2 line-clamp-2 text-sm text-stone-500">
-                    {craft!.description}
-                  </p>
-                )}
-              </Link>
-            ))}
-          </div>
+          <CraftGrid
+            crafts={recentCrafts}
+            emptyMessage="No recently viewed crafts."
+          />
         </section>
       )}
     </main>
