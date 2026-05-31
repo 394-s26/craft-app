@@ -31,6 +31,28 @@ export const CraftDetailPage = () => {
   const [shareError, setShareError] = useState('');
   const [copied, setCopied] = useState(false);
 
+  const renderDescription = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    return text.split(urlRegex).map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-ghibli-forest underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      return part;
+    });
+  };
+
   useEffect(() => {
     if (craft) {
       setProgress(craft.progress ?? 0);
@@ -199,7 +221,7 @@ export const CraftDetailPage = () => {
         </div>
 
         <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">
-          {craft.description}
+          {renderDescription(craft.description)}
         </p>
       </section>
 
@@ -351,22 +373,7 @@ export const CraftDetailPage = () => {
         </section>
       ) : null}
 
-      {craft.status === 'inspiration' && craft.sourceUrl ? (
-        <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-ghibli-deep">
-            Original Inspo Source
-          </h2>
-
-          <a
-            href={craft.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center rounded-2xl bg-ghibli-light px-4 py-3 font-semibold text-ghibli-forest hover:underline"
-          >
-            Open → {craft.sourceUrl}
-          </a>
-        </section>
-      ) : null}
+      
 
       <section className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
         {craft.status !== 'inspiration' ? (
@@ -520,7 +527,7 @@ export const CraftDetailPage = () => {
               </button>
             </div>
 
-            <CraftForm initialCraft={craft} submitLabel="Update craft" onSubmit={handleSubmit} />
+            <CraftForm initialCraft={craft} submitLabel="Update craft" onSubmit={handleSubmit} inspirationMode={craft.status === 'inspiration'}/>
           </div>
         </div>
       ) : null}
