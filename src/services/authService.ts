@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { GoogleAuthProvider, deleteUser, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import type { AuthUser } from '../types/AuthUser';
 import { auth } from './firebase';
 
@@ -36,6 +36,18 @@ export const signOutUser = async (): Promise<void> => {
     await signOut(auth);
   } catch (error) {
     throw error instanceof Error ? error : new Error('Sign-out failed.');
+  }
+};
+
+export const deleteAccount = async (): Promise<void> => {
+  if (!auth.currentUser) throw new Error('Not signed in.');
+  try {
+    await deleteUser(auth.currentUser);
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'auth/requires-recent-login') {
+      throw new Error('Please sign out and sign back in before deleting your account.');
+    }
+    throw error instanceof Error ? error : new Error('Could not delete account.');
   }
 };
 

@@ -9,32 +9,47 @@ import { FolderPage } from './pages/FolderPage';
 import { FriendsPage } from './pages/FriendsPage';
 import { HomePage } from './pages/HomePage';
 import { NewCraftPage } from './pages/NewCraftPage';
+import { PublicCraftPage } from './pages/PublicCraftPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { ShoppingListPage } from './pages/ShoppingListPage';
 
 export const App = () => (
   <BrowserRouter>
     <AuthProvider>
-      <AuthGate>
-        <CraftProvider>
-          <FriendProvider>
-            <div className="min-h-screen bg-ghibli-light text-stone-900">
-              <NavBar />
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/inspiration" element={<FolderPage status={["inspiration"]} title="Inspiration" description="A private folder for ideas from Instagram, Etsy, patterns, blogs, photos, or anything else you want to make later." />} />
-                {/* <Route path="/work-in-progress" element={<FolderPage status="work-in-progress" title="Work in Progress" description="All active projects with photos, descriptions, and materials you can update as you make progress." />} />
-                <Route path="/completed" element={<FolderPage status="completed" title="Completed" description="A finished gallery of crafts you have completed and want to remember." />} /> */}
-                <Route path="/work" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" description="All your projects with photos, descriptions, and materials you can update as you make progress."/> } />
-                <Route path="/shopping-list" element={<ShoppingListPage />} />
-                <Route path="/friends" element={<FriendsPage />} />
-                <Route path="/new" element={<NewCraftPage />} />
-                <Route path="/crafts/:craftId" element={<CraftDetailPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </div>
-          </FriendProvider>
-        </CraftProvider>
-      </AuthGate>
+      <Routes>
+        <Route path="/public/:craftId" element={<PublicCraftPage />} />
+        <Route path="*" element={
+          <AuthGate>
+            <CraftProvider>
+              <FriendProvider>
+                <div className="min-h-screen flex flex-col bg-ghibli-light text-stone-900">
+                  <NavBar />
+
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/inspiration" element={<FolderPage status={["inspiration"]} title="Inspiration" />} />
+                      <Route path="/work" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" />} />
+                      <Route path="/work/completed" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" defaultFilters={['completed']}/>} />
+                      <Route path="/work/wip" element={<FolderPage status={["work-in-progress", "completed"]} title="My Work" defaultFilters={['work-in-progress']}/>} />
+                      <Route path="/shopping-list" element={<ShoppingListPage />} />
+                      <Route path="/friends" element={<FriendsPage />} />
+                      <Route path="/new" element={<NewCraftPage />} />
+                      <Route path="/crafts/:craftId" element={<CraftDetailPage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </main>
+
+                  <footer className="py-4 text-center text-sm text-stone-500">
+                    Made with React.
+                  </footer>
+                </div>
+              </FriendProvider>
+            </CraftProvider>
+          </AuthGate>
+        } />
+      </Routes>
     </AuthProvider>
   </BrowserRouter>
 );

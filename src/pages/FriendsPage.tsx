@@ -1,3 +1,4 @@
+import { Users } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { StatusBadge } from '../components/StatusBadge';
 import { useFriends } from '../hooks/useFriends';
@@ -26,7 +27,10 @@ export const FriendsPage = () => {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-4xl font-black tracking-tight text-ghibli-deep">My Friends</h1>
+      <h1 className="flex items-center gap-3 text-4xl font-black tracking-tight text-ghibli-deep">
+        <Users size={30} />
+        My Friends
+      </h1>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[22rem_1fr]">
         <div className="space-y-6">

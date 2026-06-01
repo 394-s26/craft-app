@@ -2,12 +2,17 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /crafts/{craftId} {
-      allow read: if request.auth != null && (
-        resource.data.userId == request.auth.uid ||
-        request.auth.token.email in resource.data.sharedWith
-      );
+      allow read: if resource.data.isPublic == true ||
+        (request.auth != null && (
+          resource.data.userId == request.auth.uid ||
+          request.auth.token.email in resource.data.sharedWith
+        ));
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    match /mail/{docId} {
+      allow create: if request.auth != null;
     }
 
     match /friendships/{friendshipId} {

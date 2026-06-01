@@ -5,6 +5,7 @@ import {
   subscribeToFriendsAdded,
   subscribeToFriendsWhoAddedMe,
 } from '../services/friendService';
+import { sendFriendInviteEmail } from '../services/emailService';
 import { subscribeToSharedCrafts } from '../services/craftService';
 import type { Friend } from '../types/Friend';
 import type { Craft } from '../types/Craft';
@@ -80,6 +81,10 @@ export const FriendProvider = ({ children }: PropsWithChildren) => {
     setError(null);
     try {
       await addFriendService(user.uid, user.email, toEmail);
+      const fromName = user.displayName ?? user.email;
+      sendFriendInviteEmail(fromName, user.email, toEmail, window.location.origin).catch((err) => {
+        console.warn('Invite email failed:', err);
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not add friend.');
     }

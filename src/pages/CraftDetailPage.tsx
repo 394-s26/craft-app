@@ -1,18 +1,20 @@
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { CraftForm } from '../components/CraftForm';
 import { StatusBadge } from '../components/StatusBadge';
+import { useAuth } from '../hooks/useAuth';
 import { useCrafts } from '../hooks/useCrafts';
-import { useFriends } from '../hooks/useFriends';
-import { updateSharedWith } from '../services/craftService';
+import { updateIsPublic, updateSharedWith } from '../services/craftService';
+import { sendCraftShareEmail } from '../services/emailService';
 import type { Craft, CraftInput, CraftStatus } from '../types/Craft';
 import { CircularProgress } from '../components/ProgressCircle';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 export const CraftDetailPage = () => {
   const { craftId } = useParams();
   const navigate = useNavigate();
-  const { crafts, editCraft, moveCraft, removeCraft } = useCrafts();
-  const { friends } = useFriends();
+  const { crafts, editCraft, removeCraft } = useCrafts();
+  const { user } = useAuth();
 
   const [selectedInspirationCraft, setSelectedInspirationCraft] = useState<Craft | null>(null);
   const [editingCraft, setEditingCraft] = useState(false);
@@ -24,6 +26,32 @@ export const CraftDetailPage = () => {
 
   const [progress, setProgress] = useState(0);
   const [progressReady, setProgressReady] = useState(false);
+  const [shareEmail, setShareEmail] = useState('');
+  const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const renderDescription = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    return text.split(urlRegex).map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-ghibli-forest underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      return part;
+    });
+  };
 
   useEffect(() => {
     if (craft) {
@@ -32,6 +60,21 @@ export const CraftDetailPage = () => {
       setCurrentPhotoIndex(0);
     }
   }, [craft]);
+
+  useEffect(() => {
+    if (!craftId) return;
+
+    const existing: string[] = JSON.parse(
+      localStorage.getItem('recentCrafts') || '[]'
+    );
+
+    const updated = [
+      craftId,
+      ...existing.filter((id) => id !== craftId),
+    ].slice(0, 3);
+
+    localStorage.setItem('recentCrafts', JSON.stringify(updated));
+  }, [craftId]);
 
   useEffect(() => {
     if (!craft || !progressReady) return;
@@ -73,22 +116,47 @@ export const CraftDetailPage = () => {
     setEditingCraft(false);
   };
 
-  const handleMove = async (status: CraftStatus) => {
-    await moveCraft(craft.id, status);
-    navigate(`/${status === 'work-in-progress' || status === 'completed' ? 'work' : status}`);
-  };
-
   const handleDelete = async () => {
     await removeCraft(craft.id);
     navigate('/');
   };
 
-  const toggleShare = async (email: string) => {
+  const handleShareWithEmail = async (e: FormEvent) => {
+    e.preventDefault();
+    const email = shareEmail.trim().toLowerCase();
+    if (!email) return;
+    setSharing(true);
+    setShareError('');
+    try {
+      const current = craft.sharedWith ?? [];
+      if (!current.includes(email)) {
+        await updateSharedWith(craft.id, [...current, email]);
+      }
+      const fromName = user?.displayName ?? user?.email ?? 'Someone';
+      const fromEmail = user?.email ?? '';
+      const craftUrl = `${window.location.origin}/public/${craft.id}`;
+      await sendCraftShareEmail(fromName, fromEmail, email, craft.title, craftUrl);
+      setShareEmail('');
+    } catch {
+      setShareError('Could not share. Please try again.');
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const revokeAccess = async (email: string) => {
     const current = craft.sharedWith ?? [];
-    const next = current.includes(email)
-      ? current.filter((e) => e !== email)
-      : [...current, email];
-    await updateSharedWith(craft.id, next);
+    await updateSharedWith(craft.id, current.filter((e) => e !== email));
+  };
+
+  const togglePublic = async () => {
+    await updateIsPublic(craft.id, !craft.isPublic);
+  };
+
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(`${window.location.origin}/public/${craft.id}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const photosPerLine = 3;
@@ -111,12 +179,7 @@ export const CraftDetailPage = () => {
 
   const folderRoute = craft.status === 'work-in-progress' || craft.status === 'completed' ? 'work' : craft.status;
 
-  const sources =
-    craft.sources?.length
-      ? craft.sources
-      : craft.sourceUrl
-        ? [{ id: 'source-url', type: 'external' as const, url: craft.sourceUrl }]
-        : [];
+  const sources = craft.sources?.length ? craft.sources : [];
 
   const currentPhotos = craft.photos.slice(currentPhotoIndex, currentPhotoIndex + photosPerLine);
 
@@ -124,7 +187,7 @@ export const CraftDetailPage = () => {
     <main className="mx-auto max-w-6xl px-4 py-10">
       <div className="flex items-center justify-between gap-4">
         <Link className="text-sm font-bold text-ghibli-forest hover:text-ghibli-deep" to={`/${folderRoute}`}>
-          ← Back to folder
+          ← Back to {craft.status === 'inspiration' ? 'Inspo' : 'My Work'}
         </Link>
       </div>
 
@@ -134,25 +197,31 @@ export const CraftDetailPage = () => {
             {craft.title}
           </h1>
 
-          <StatusBadge status={craft.status} />
+          {craft.status !== 'inspiration' ? (
+            <CircularProgress value={progress} onChange={setProgress}/>
+          ) : null}
 
           <button
-            className="ml-auto rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
+            className="ml-auto flex items-center gap-2 rounded-full bg-ghibli-deep px-5 py-2 font-bold text-white hover:bg-ghibli-forest"
             type="button"
             onClick={() => setEditingCraft(true)}
           >
-            Edit craft
+            <Pencil size={16} />
+            {craft.status === 'inspiration' ? 'Edit Inspo' : 'Edit Craft'}
+          </button>
+
+          <button
+            className="flex items-center gap-2 rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <Trash2 size={16} />
+            {craft.status === 'inspiration' ? 'Delete Inspo' : 'Delete Craft'}
           </button>
         </div>
 
-        <div className="w-15 h-15" >
-          {craft.status !== 'inspiration' ? (
-            <CircularProgress value={progress} onChange={setProgress} size={77}/>
-          ) : null}
-        </div>
-
         <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-stone-700">
-          {craft.description}
+          {renderDescription(craft.description)}
         </p>
       </section>
 
@@ -207,7 +276,7 @@ export const CraftDetailPage = () => {
         )}
       </section>
 
-      {sources.length > 0 ? (
+      {craft.status !== 'inspiration' && sources.length > 0 ? (
         <section className="mt-8 h-150 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
           <h2 className="text-2xl font-bold text-ghibli-deep">Inspiration Sources</h2>
 
@@ -225,10 +294,10 @@ export const CraftDetailPage = () => {
                         onClick={() => window.open(source.url, '_blank')}
                       >
                         <div className="w-full h-100 bg-stone-100 rounded-2xl flex items-center justify-center overflow-hidden mb-2">
-                          {source ? ( // todo add photo to external source type
+                          {source.imageUrl ? (
                             <img
-                              src={source.url} // todo add photo to external source type
-                              alt="External source"
+                              src={source.imageUrl}
+                              alt={'Image preview of external source link'}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -256,12 +325,12 @@ export const CraftDetailPage = () => {
                       <div className="w-full h-100 bg-stone-100 rounded-2xl flex items-center justify-center overflow-hidden mb-2">
                         <img
                           src={linkedCraft?.photos[0]?.url}
-                          alt={linkedCraft?.photos[0]?.alt || linkedCraft?.title || 'Inspiration craft'}
+                          alt={linkedCraft?.photos[0]?.alt || linkedCraft?.title || 'Image could not be loaded'}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <p className="text-center font-semibold text-ghibli-forest text-sm">
-                        {linkedCraft?.title || 'View in Inspo'}
+                        {linkedCraft?.title || 'Inspo (deleted)'}
                       </p>
                     </button>
                   );
@@ -304,77 +373,104 @@ export const CraftDetailPage = () => {
         </section>
       ) : null}
 
+      
+
       <section className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
-        <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-ghibli-deep">Materials</h2>
-          {craft.materials.length > 0 ? (
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-              {craft.materials.map((material) => (
-                <li className="rounded-2xl bg-ghibli-light px-4 py-3 text-stone-700" key={material}>
-                  {material}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 text-stone-600">No materials added yet.</p>
-          )}
-        </section>
+        {craft.status !== 'inspiration' ? (
+          <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-bold text-ghibli-deep">Materials</h2>
+
+            {craft.materials.length > 0 ? (
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {craft.materials.map((material) => (
+                  <li
+                    className="rounded-2xl bg-ghibli-light px-4 py-3 text-stone-700"
+                    key={material}
+                  >
+                    {material}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-stone-600">No materials added yet.</p>
+            )}
+          </section>
+        ) : null}
+
+        
 
         <aside className="space-y-4">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-ghibli-deep">Move craft</h2>
-            <div className="mt-4 grid gap-2">
-              {craft.status === 'inspiration' ? (
-                <button
-                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-ghibli-light"
-                  onClick={() => void handleMove('work-in-progress')}
-                >
-                  Move to Work In Progress
-                </button>
-              ) : (
-                <button
-                  className="rounded-full border border-stone-300 px-4 py-2 font-semibold hover:bg-ghibli-light"
-                  onClick={() => void handleMove('inspiration')}
-                >
-                  Move to Inspiration
-                </button>
-              )}
+            <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
 
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-stone-700">Public link</p>
+                <p className="text-xs text-stone-500">Anyone with the link can view</p>
+              </div>
               <button
-                className="rounded-full border border-red-200 px-4 py-2 font-semibold text-red-700 hover:bg-red-50"
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${craft.isPublic ? 'bg-ghibli-forest' : 'bg-stone-300'}`}
                 type="button"
-                onClick={() => setShowDeleteConfirm(true)}
+                role="switch"
+                aria-checked={craft.isPublic}
+                aria-label={craft.isPublic ? 'Disable public link' : 'Enable public link'}
+                onClick={() => void togglePublic()}
               >
-                Delete Craft
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition-transform ${craft.isPublic ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>
-          </section>
 
-          <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
-            {friends.length === 0 ? (
-              <p className="mt-3 text-sm text-stone-500">
-                Add friends on the Friends page to share this craft.
-              </p>
-            ) : (
-              <ul className="mt-3 space-y-2">
-                {friends.map((friend) => {
-                  const isShared = craft.sharedWith?.includes(friend.toEmail) ?? false;
-                  return (
-                    <li key={friend.id} className="flex items-center justify-between">
-                      <span className="truncate text-sm text-stone-700">{friend.toEmail}</span>
+            {craft.isPublic ? (
+              <button
+                className="mt-3 flex w-full items-center justify-between gap-2 rounded-2xl bg-ghibli-light px-4 py-3 text-sm text-stone-700 hover:bg-ghibli-soft"
+                type="button"
+                onClick={() => void copyLink()}
+              >
+                <span className="truncate font-mono text-xs">{window.location.origin}/public/{craft.id}</span>
+                <span className="shrink-0 font-semibold text-ghibli-forest">{copied ? 'Copied!' : 'Copy'}</span>
+              </button>
+            ) : null}
+
+            <form className="mt-5" onSubmit={(e) => void handleShareWithEmail(e)}>
+              <p className="mb-2 text-sm font-semibold text-stone-700">Share with someone</p>
+              <div className="flex gap-2">
+                <input
+                  className="flex-1 rounded-2xl border border-stone-200 px-3 py-2 text-sm focus:border-ghibli-sage focus:outline-none"
+                  type="email"
+                  placeholder="friend@example.com"
+                  value={shareEmail}
+                  onChange={(e) => setShareEmail(e.target.value)}
+                />
+                <button
+                  className="shrink-0 rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest disabled:opacity-50"
+                  type="submit"
+                  disabled={sharing || !shareEmail.trim()}
+                >
+                  {sharing ? '...' : 'Send'}
+                </button>
+              </div>
+              {shareError ? <p className="mt-2 text-xs text-red-600">{shareError}</p> : null}
+            </form>
+
+            {(craft.sharedWith ?? []).length > 0 ? (
+              <div className="mt-5">
+                <p className="mb-2 text-sm font-semibold text-stone-700">People with access</p>
+                <ul className="space-y-2">
+                  {(craft.sharedWith ?? []).map((email) => (
+                    <li key={email} className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm text-stone-700">{email}</span>
                       <button
-                        className={`ml-3 shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${isShared ? 'bg-ghibli-forest text-white hover:bg-ghibli-deep' : 'border border-stone-300 text-stone-700 hover:bg-ghibli-light'}`}
+                        className="shrink-0 rounded-full border border-stone-300 px-3 py-1 text-xs font-semibold text-stone-600 hover:border-red-300 hover:text-red-600"
                         type="button"
-                        onClick={() => void toggleShare(friend.toEmail)}
+                        onClick={() => void revokeAccess(email)}
                       >
-                        {isShared ? 'Shared ✓' : 'Share'}
+                        Remove
                       </button>
                     </li>
-                  );
-                })}
-              </ul>
-            )}
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </section>
         </aside>
       </section>
@@ -414,7 +510,11 @@ export const CraftDetailPage = () => {
           <div className="max-h-full w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit craft</h2>
+                {craft.status === 'inspiration' ? (
+                  <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit Inspo</h2>
+                ) : (
+                  <h2 className="text-3xl font-black tracking-tight text-ghibli-deep">Edit Craft</h2>
+                )}
                 <p className="mt-1 text-sm text-stone-500">Update the craft details, sources, materials, and photos.</p>
               </div>
 
@@ -427,7 +527,7 @@ export const CraftDetailPage = () => {
               </button>
             </div>
 
-            <CraftForm initialCraft={craft} submitLabel="Update craft" onSubmit={handleSubmit} />
+            <CraftForm initialCraft={craft} submitLabel="Update craft" onSubmit={handleSubmit} inspirationMode={craft.status === 'inspiration'}/>
           </div>
         </div>
       ) : null}
@@ -453,10 +553,10 @@ export const CraftDetailPage = () => {
               </button>
             </div>
 
-            {selectedInspirationCraft.sourceUrl ? (
+            {selectedInspirationCraft.sources && selectedInspirationCraft.sources.length > 0 && selectedInspirationCraft.sources[0].type === 'external' ? (
               <a
                 className="mt-5 inline-flex font-semibold text-ghibli-forest underline"
-                href={selectedInspirationCraft.sourceUrl}
+                href={selectedInspirationCraft.sources[0].url}
                 target="_blank"
                 rel="noreferrer"
               >

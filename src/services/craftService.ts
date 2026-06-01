@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
@@ -26,6 +27,7 @@ const mapSources = (data: DocumentData): CraftSource[] => {
             type: 'external',
             url: String(source.url),
             ...(source.label ? { label: String(source.label) } : {}),
+            ...(source.imageUrl ? { imageUrl: String(source.imageUrl) } : {}),
           };
         }
 
@@ -41,17 +43,6 @@ const mapSources = (data: DocumentData): CraftSource[] => {
       })
       .filter((source): source is CraftSource => source !== null);
   }
-
-  if (data.sourceUrl) {
-    return [
-      {
-        id: crypto.randomUUID(),
-        type: 'external',
-        url: String(data.sourceUrl),
-      },
-    ];
-  }
-
   return [];
 };
 
@@ -63,7 +54,7 @@ const mapCraft = (id: string, data: DocumentData): Craft => ({
   materials: Array.isArray(data.materials) ? data.materials.map(String) : [],
   photos: Array.isArray(data.photos) ? data.photos : [],
   status: data.status as CraftStatus,
-  sourceUrl: data.sourceUrl ? String(data.sourceUrl) : "",
+  sourceUrl: data.sourceUrl ? String(data.sourceUrl) : undefined,
   sources: mapSources(data),
   progress: typeof data.progress === 'number' ? data.progress : 0,
   isPublic: data.isPublic === true,
@@ -88,12 +79,11 @@ export const subscribeToCrafts = (
 
 export const createCraft = async (userId: string, input: CraftInput): Promise<string> => {
   try {
-    const docRef = await addDoc(craftsCollection, {
-      ...input,
-      userId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    const data: Record<string, unknown> = { userId, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+    for (const [k, v] of Object.entries(input)) {
+      if (v !== undefined) data[k] = v;
+    }
+    const docRef = await addDoc(craftsCollection, data);
 
     return docRef.id;
   } catch (error) {
@@ -102,12 +92,12 @@ export const createCraft = async (userId: string, input: CraftInput): Promise<st
 };
 
 export const updateCraft = async (craftId: string, input: CraftInput): Promise<void> => {
-  //console.log('Saving to Firebase:', input);
   try {
-    await updateDoc(doc(db, 'crafts', craftId), {
-      ...input,
-      updatedAt: serverTimestamp(),
-    });
+    const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+    for (const [k, v] of Object.entries(input)) {
+      if (v !== undefined) data[k] = v;
+    }
+    await updateDoc(doc(db, 'crafts', craftId), data);
   } catch (error) {
     throw error instanceof Error ? error : new Error('Could not update craft.');
   }
@@ -137,6 +127,20 @@ export const updateSharedWith = async (craftId: string, sharedWith: string[]): P
     await updateDoc(doc(db, 'crafts', craftId), { sharedWith });
   } catch (error) {
     throw error instanceof Error ? error : new Error('Could not update sharing.');
+  }
+};
+
+export const getCraftById = async (craftId: string): Promise<Craft | null> => {
+  const craftDoc = await getDoc(doc(db, 'crafts', craftId));
+  if (!craftDoc.exists()) return null;
+  return mapCraft(craftDoc.id, craftDoc.data());
+};
+
+export const updateIsPublic = async (craftId: string, isPublic: boolean): Promise<void> => {
+  try {
+    await updateDoc(doc(db, 'crafts', craftId), { isPublic });
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Could not update visibility.');
   }
 };
 
