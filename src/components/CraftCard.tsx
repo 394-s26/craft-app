@@ -83,6 +83,18 @@ export const CraftCard = ({ craft }: CraftCardProps) => {
               {craft.isPublic ? 'Public' : 'Private'}
             </span>
           </div>
+          {craft.tags?.length ? (
+            <div className="mt-3 flex flex-wrap justify-end gap-2">
+              {craft.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-ghibli-soft px-2.5 py-1 text-xs font-semibold text-ghibli-forest"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
       </Link>
       {showConfirm && (

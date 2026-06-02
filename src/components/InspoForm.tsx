@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ImageIcon, X, Loader2, Link } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useCrafts } from '../hooks/useCrafts';
 import { uploadCraftPhoto } from '../services/storageService';
 import type { CraftInput, CraftPhoto } from '../types/Craft';
 
@@ -8,8 +9,20 @@ interface InspoFormProps {
   onSave: (input: CraftInput) => Promise<void>;
 }
 
-function isEmpty(title: string, notes: string, photos: CraftPhoto[], sources: { url: string }[]) {
-  return !title.trim() && !notes.trim() && photos.length === 0 && sources.length === 0;
+function isEmpty(
+  title: string,
+  notes: string,
+  photos: CraftPhoto[],
+  sources: { url: string }[],
+  tags: string[],
+) {
+  return (
+    !title.trim() &&
+    !notes.trim() &&
+    photos.length === 0 &&
+    sources.length === 0 &&
+    tags.length === 0
+  );
 }
 
 export const InspoForm = ({ onSave }: InspoFormProps) => {
@@ -24,6 +37,9 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
   const [saving, setSaving] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const { crafts } = useCrafts();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const notesRef = useRef<HTMLTextAreaElement>(null);
@@ -41,6 +57,8 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
     setNotes('');
     setSourceUrl('');
     setPhotos([]);
+    setTags([]);
+    setTagInput('');
     setExpanded(false);
     setDragOver(false);
     setError(null);
@@ -49,7 +67,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
 
   const handleSave = useCallback(async () => {
     if (saving || uploading) return;
-    if (isEmpty(title, notes, photos, [{ url: sourceUrl }])) {
+    if (isEmpty(title, notes, photos, [{ url: sourceUrl }], tags)) {
       reset();
       return;
     }
@@ -65,6 +83,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
         status: 'inspiration',
         sourceUrl,
         isPublic: false,
+        tags,
       });
       reset();
     } catch (err) {
@@ -72,7 +91,7 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
     } finally {
       setSaving(false);
     }
-  }, [saving, uploading, title, notes, photos, sourceUrl, onSave, reset]);
+  }, [saving, uploading, title, notes, photos, sourceUrl, tags, onSave, reset]);
 
   // ESC → save & close
   useEffect(() => {
@@ -114,6 +133,26 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
     } finally {
       setUploading(false);
     }
+  };
+
+  const existingTags = Array.from(
+    new Set(crafts.flatMap((craft) => craft.tags ?? [])),
+  ).filter(Boolean) as string[];
+
+  const suggestedTags = existingTags.filter(
+    (tag) => !tags.some((selected) => selected.toLowerCase() === tag.toLowerCase()),
+  );
+
+  const addTag = (value: string) => {
+    const nextTag = value.trim();
+    if (!nextTag) return;
+    if (tags.some((tag) => tag.toLowerCase() === nextTag.toLowerCase())) return;
+    setTags((prev) => [...prev, nextTag]);
+    setTagInput('');
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
 
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -234,6 +273,61 @@ export const InspoForm = ({ onSave }: InspoFormProps) => {
               rows={2}
               className="w-full resize-none px-4 py-2 text-sm text-stone-700 placeholder-stone-300 outline-none"
             />
+
+            {/* Tags */}
+            <div className="space-y-2 border-t border-stone-100 px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-bold text-stone-700">Tags</span>
+                <span className="text-xs text-stone-400">Add short, searchable labels</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700 ring-1 ring-stone-200 hover:bg-stone-200"
+                  >
+                    {tag} ×
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addTag(tagInput);
+                    }
+                  }}
+                  placeholder="Add a tag and press Enter"
+                  className="min-w-0 flex-1 rounded-2xl border border-stone-300 px-4 py-2 text-sm outline-none focus:border-ghibli-forest"
+                />
+                <button
+                  type="button"
+                  onClick={() => addTag(tagInput)}
+                  className="rounded-2xl border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 hover:border-ghibli-forest"
+                >
+                  Add
+                </button>
+              </div>
+              {suggestedTags.length > 0 ? (
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {suggestedTags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => addTag(tag)}
+                      className="rounded-full bg-ghibli-light px-3 py-1 text-xs font-semibold text-ghibli-forest hover:bg-ghibli-soft"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
 
             {/* Source URL (optional) */} 
             <div className="flex items-center gap-2 border-t border-stone-100 px-4 py-2">

@@ -34,6 +34,7 @@ export interface Craft {
   updatedAt: string;
   progress?: number;
   isPublic: boolean;
+  tags?: string[];
   sharedWith?: string[];
 }
 
@@ -46,5 +47,6 @@ export interface CraftInput {
   sourceUrl?: string;
   sources?: CraftSource[];
   progress?: number;
+  tags?: string[];
   isPublic: boolean;
 }

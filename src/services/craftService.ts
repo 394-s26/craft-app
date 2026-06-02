@@ -58,6 +58,7 @@ const mapCraft = (id: string, data: DocumentData): Craft => ({
   sources: mapSources(data),
   progress: typeof data.progress === 'number' ? data.progress : 0,
   isPublic: data.isPublic === true,
+  tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
   sharedWith: Array.isArray(data.sharedWith) ? data.sharedWith.map(String) : [],
   createdAt: data.createdAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),
   updatedAt: data.updatedAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),

@@ -107,6 +107,7 @@ export const CraftForm = ({
   const [photos, setPhotos] = useState<CraftPhoto[]>(
     initialCraft?.photos ?? [],
   );
+  const [tags, setTags] = useState<string[]>(initialCraft?.tags ?? []);
   const [photoUrl, setPhotoUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -301,6 +302,7 @@ export const CraftForm = ({
         photos,
         status,
         sources: nextSources,
+        tags,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save craft.");
