@@ -58,6 +58,7 @@ export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) =
     setActiveFilters(defaultFilters ?? status);
   }, [defaultFilters, status]);
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('all');
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [showNewCraftModal, setShowNewCraftModal] = useState(false);
 
   const isInspirationOnly = status.length === 1 && status[0] === 'inspiration';
@@ -68,12 +69,24 @@ export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) =
 
   const effectiveFilters = status.length > 1 ? activeFilters : status;
 
+  const allInspoTags = Array.from(
+    new Set(
+      crafts
+        .filter((craft) => craft.status === 'inspiration')
+        .flatMap((craft) => craft.tags ?? []),
+    ),
+  ).filter(Boolean) as string[];
+
   const filteredCrafts = crafts
     .filter((craft) => effectiveFilters.includes(craft.status))
     .filter((craft) => {
       if (visibilityFilter === 'public') return craft.isPublic;
       if (visibilityFilter === 'private') return !craft.isPublic;
       return true;
+    })
+    .filter((craft) => {
+      if (!isInspirationOnly || tagFilter.length === 0) return true;
+      return craft.tags?.some((tag) => tagFilter.includes(tag));
     });
 
   const handleInspoSave = async (input: CraftInput) => {
@@ -110,7 +123,47 @@ export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) =
       </section>
 
       {isInspirationOnly && (
-        <InspoForm onSave={handleInspoSave} />
+        <>
+          <InspoForm onSave={handleInspoSave} />
+          {allInspoTags.length > 0 ? (
+            <div className="mb-6 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex flex-wrap items-center gap-3">
+                <span className="text-sm font-bold text-stone-700">Filter by tags:</span>
+                {tagFilter.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setTagFilter([])}
+                    className="rounded-full border border-stone-300 bg-stone-50 px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-100"
+                  >
+                    Clear
+                  </button>
+                ) : null}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {allInspoTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      setTagFilter((current) =>
+                        current.includes(tag)
+                          ? current.filter((value) => value !== tag)
+                          : [...current, tag],
+                      );
+                    }}
+                    className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
+                      tagFilter.includes(tag)
+                        ? 'bg-ghibli-deep text-white'
+                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </>
       )}
 
       <div className="mb-6 flex flex-wrap items-center gap-4">
