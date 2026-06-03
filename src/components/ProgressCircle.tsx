@@ -197,20 +197,6 @@ export const CircularProgress = ({
           style={{ transition: 'fill 0.3s' }}
         />
       )}
-
-      {/* Percentage label 
-      <text
-        x={cx} y={cy}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={size * 0.2}
-        fontWeight="700"
-        fill={color}
-        style={{ transition: 'fill 0.3s', fontFamily: 'inherit', letterSpacing: '-0.5px', pointerEvents: 'none' }}
-      >
-        {Math.round(safe)}%
-      </text>
-      */}
     </svg>
   );
 };

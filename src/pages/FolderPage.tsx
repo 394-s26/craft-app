@@ -177,7 +177,6 @@ export const FolderPage = ({ status, title, defaultFilters }: FolderPageProps) =
                 onClick={() => toggleFilter(s)}
                 className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
                   progressFilter === s ? statusStyles[s].active : statusStyles[s].inactive
-                  // activeFilters.includes(s) ? statusStyles[s].active : statusStyles[s].inactive
                 }`}
               >
                 {formatProgressFilter(s)}

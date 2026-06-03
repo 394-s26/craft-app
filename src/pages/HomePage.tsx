@@ -43,15 +43,6 @@ export const HomePage = () => {
           <p className="mt-3 text-4xl font-black text-ghibli-deep">{completedCount}</p>
         </Link>
       </section>
-      {/* 
-      <section className="mt-10 rounded-4xl bg-ghibli-deep p-8 text-white md:p-12">
-        <p className="text-sm font-bold uppercase tracking-[0.25em] text-ghibli-sage">Crafter dashboard</p>
-        <Link className="mt-8 inline-flex items-center gap-2 rounded-full bg-ghibli-sage px-6 py-3 font-bold text-white hover:bg-ghibli-forest" to="/new">
-          <Pencil size={16} />
-          Create a craft
-        </Link>
-      </section>
-      */}
       
       {recentCrafts.length > 0 && (
         <section className="mt-10">
