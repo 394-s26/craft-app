@@ -107,7 +107,7 @@ export const CraftForm = ({
   const [photos, setPhotos] = useState<CraftPhoto[]>(
     initialCraft?.photos ?? [],
   );
-  const [tags, setTags] = useState<string[]>(initialCraft?.tags ?? []);
+  const [tags] = useState<string[]>(initialCraft?.tags ?? []);
   const [photoUrl, setPhotoUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
