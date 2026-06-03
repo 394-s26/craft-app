@@ -124,15 +124,45 @@ service firebase.storage {
 }
 ```
 
-### 5. Enable email (Trigger Email extension)
+### 5. Enable email (Trigger Email from Firestore extension)
 
-Sharing a craft with a friend sends an email notification via the Firebase **Trigger Email** extension, which watches the `mail` Firestore collection.
+Sharing a craft sends an email notification via the Firebase **Trigger Email from Firestore** extension. It watches the `mail` Firestore collection and delivers messages via SMTP. The app already writes to this collection — you just need to install the extension and point it at an SMTP server.
 
-1. In the Firebase Console, go to **Extensions → Explore extensions**.
-2. Search for **Trigger Email** and click **Install**.
-3. During setup, provide an SMTP connection string. For development, [Mailtrap](https://mailtrap.io) or [Resend](https://resend.com) both work well.
-4. Set the **Email documents collection** to `mail`.
-5. No code changes are needed — the app already writes to the `mail` collection.
+#### Step 1 — Create a Gmail App Password
+
+The easiest SMTP source is a Gmail account with an App Password (required when 2-Step Verification is on — which it must be).
+
+1. Go to your Google Account at [myaccount.google.com](https://myaccount.google.com).
+2. Go to **Security → 2-Step Verification** and make sure it is **on**.
+3. In the search bar at the top of the page search **"App passwords"** and open it (or go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)).
+4. Under **App name**, type something like `Crafter Firebase` and click **Create**.
+5. Copy the 16-character password that appears — you won't see it again.
+
+Your SMTP connection string will be:
+
+```
+smtps://your-gmail@gmail.com:your-app-password@smtp.gmail.com:465
+```
+
+Replace `your-gmail@gmail.com` with the Gmail address and `your-app-password` with the 16-character code (no spaces).
+
+#### Step 2 — Install the extension
+
+1. In the [Firebase Console](https://console.firebase.google.com), go to **Extensions → Explore extensions**.
+2. Search for **Trigger Email from Firestore** and click **Install**.
+3. Choose the same project you set up above.
+4. When prompted for configuration:
+   - **SMTP connection URI**: paste the `smtps://...` string from Step 1
+   - **Email documents collection**: `mail`
+   - **Default FROM address**: the same Gmail address (e.g. `Crafter <your-gmail@gmail.com>`)
+   - Leave all other fields at their defaults.
+5. Click **Install extension** and wait for it to finish (takes ~2 minutes).
+
+#### Step 3 — Test it
+
+Share a craft with a friend's email from the craft detail page. Within a few seconds a document will appear in the `mail` collection in Firestore, and the extension will deliver the email. If it fails, check **Extensions → Trigger Email → Logs** in the Firebase Console for the error.
+
+> **Note:** Gmail limits free accounts to 500 emails/day. For production with higher volume, swap the SMTP string for [Resend](https://resend.com) or [SendGrid](https://sendgrid.com) — the rest of the setup is identical.
 
 ### 6. Install the Firebase CLI and deploy
 
