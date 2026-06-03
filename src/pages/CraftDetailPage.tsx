@@ -192,6 +192,9 @@ export const CraftDetailPage = () => {
     await editCraft(craft.id, { ...craft, tags: updatedTags });
   };
 
+  const selectedInspirationSourceUrl = selectedInspirationCraft?.sourceUrl
+    ?? "SOURCE_URL_NOT_AVAILABLE";
+
   const photosPerLine = 3;
   const lastPhotoViewIndex = (() => {
     const remainder = craft.photos.length % photosPerLine;
@@ -406,6 +409,23 @@ export const CraftDetailPage = () => {
         </section>
       ) : null}
 
+
+      {craft.status === 'inspiration' && craft.sourceUrl ? (
+        <section className="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 className="text-2xl font-bold text-ghibli-deep">
+            Original Inspo Source
+          </h2>
+
+          <a
+            href={craft.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center rounded-2xl bg-ghibli-light px-4 py-3 font-semibold text-ghibli-forest hover:underline"
+          >
+            Open → {craft.sourceUrl}
+          </a>
+        </section>
+      ) : null}
       
 
       <section className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.45fr]">
@@ -432,7 +452,7 @@ export const CraftDetailPage = () => {
 
         
 
-        <aside className="grid gap-4 lg:grid-cols-2">
+        <aside className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
 
@@ -651,10 +671,10 @@ export const CraftDetailPage = () => {
               </button>
             </div>
 
-            {selectedInspirationCraft.sources && selectedInspirationCraft.sources.length > 0 && selectedInspirationCraft.sources[0].type === 'external' ? (
+            {selectedInspirationSourceUrl ? (
               <a
                 className="mt-5 inline-flex font-semibold text-ghibli-forest underline"
-                href={selectedInspirationCraft.sources[0].url}
+                href={selectedInspirationSourceUrl}
                 target="_blank"
                 rel="noreferrer"
               >
