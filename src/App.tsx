@@ -1,3 +1,4 @@
+import { Github } from 'lucide-react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthGate } from './components/AuthGate';
 import { NavBar } from './components/NavBar';
@@ -41,8 +42,17 @@ export const App = () => (
                     </Routes>
                   </main>
 
-                  <footer className="py-4 text-center text-sm text-stone-500">
-                    Made with React.
+                  <footer className="py-6 text-center text-sm text-stone-500">
+                    Built by Northwestern CS 394 Spring 2026 with React ·{' '}
+                    <a
+                      href="https://github.com/394-s26/craft-app"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 hover:text-ghibli-deep transition-colors align-bottom"
+                    >
+                      <Github size={14} />
+                      GitHub
+                    </a>
                   </footer>
                 </div>
               </FriendProvider>
