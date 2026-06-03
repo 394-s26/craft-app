@@ -30,6 +30,7 @@ export const CraftDetailPage = () => {
   const [sharing, setSharing] = useState(false);
   const [shareError, setShareError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [tagInput, setTagInput] = useState('');
 
   const renderDescription = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -157,6 +158,38 @@ export const CraftDetailPage = () => {
     await navigator.clipboard.writeText(`${window.location.origin}/public/${craft.id}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const allInspoTags = Array.from(
+    new Set(
+      crafts
+        .filter((c) => c.status === 'inspiration')
+        .flatMap((c) => c.tags ?? []),
+    ),
+  ).filter(Boolean) as string[];
+
+  const suggestedTags = craft?.status === 'inspiration'
+    ? allInspoTags.filter(
+        (tag) => !craft.tags?.some((t) => t.toLowerCase() === tag.toLowerCase()),
+      )
+    : [];
+
+  const handleAddTag = async (value: string) => {
+    if (!craft) return;
+    const nextTag = value.trim();
+    if (!nextTag) return;
+    if (craft.tags?.some((tag) => tag.toLowerCase() === nextTag.toLowerCase()))
+      return;
+
+    const updatedTags = [...(craft.tags ?? []), nextTag];
+    await editCraft(craft.id, { ...craft, tags: updatedTags });
+    setTagInput('');
+  };
+
+  const handleRemoveTag = async (tagToRemove: string) => {
+    if (!craft) return;
+    const updatedTags = (craft.tags ?? []).filter((tag) => tag !== tagToRemove);
+    await editCraft(craft.id, { ...craft, tags: updatedTags });
   };
 
   const photosPerLine = 3;
@@ -399,7 +432,7 @@ export const CraftDetailPage = () => {
 
         
 
-        <aside className="space-y-4">
+        <aside className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
 
@@ -472,6 +505,71 @@ export const CraftDetailPage = () => {
               </div>
             ) : null}
           </section>
+
+          {craft.status === 'inspiration' ? (
+            <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+              <h2 className="text-xl font-bold text-ghibli-deep">Tags</h2>
+
+              {craft.tags?.length ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {craft.tags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => void handleRemoveTag(tag)}
+                      className="rounded-full bg-ghibli-soft px-3 py-1 text-sm font-semibold text-ghibli-forest hover:bg-ghibli-light"
+                    >
+                      {tag} ×
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-stone-600">No tags added yet.</p>
+              )}
+
+              <div className="mt-4 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        void handleAddTag(tagInput);
+                      }
+                    }}
+                    placeholder="Add a tag"
+                    className="flex-1 rounded-2xl border border-stone-200 px-3 py-2 text-sm focus:border-ghibli-forest focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleAddTag(tagInput)}
+                    className="shrink-0 rounded-full bg-ghibli-deep px-4 py-2 text-sm font-bold text-white hover:bg-ghibli-forest"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {suggestedTags.length > 0 ? (
+                  <div>
+                    <p className="mb-2 text-xs font-semibold text-stone-600">Existing Tags</p>
+                    <div className="flex flex-wrap gap-2">
+                      {suggestedTags.map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => void handleAddTag(tag)}
+                          className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-200"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
         </aside>
       </section>
 
