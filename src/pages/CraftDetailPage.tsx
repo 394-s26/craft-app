@@ -3,6 +3,7 @@ import { CraftForm } from '../components/CraftForm';
 import { StatusBadge } from '../components/StatusBadge';
 import { useAuth } from '../hooks/useAuth';
 import { useCrafts } from '../hooks/useCrafts';
+import { useFriends } from '../hooks/useFriends';
 import { updateIsPublic, updateSharedWith } from '../services/craftService';
 import { sendCraftShareEmail } from '../services/emailService';
 import type { Craft, CraftInput, CraftStatus } from '../types/Craft';
@@ -15,6 +16,7 @@ export const CraftDetailPage = () => {
   const navigate = useNavigate();
   const { crafts, editCraft, removeCraft } = useCrafts();
   const { user } = useAuth();
+  const { friends } = useFriends();
 
   const [selectedInspirationCraft, setSelectedInspirationCraft] = useState<Craft | null>(null);
   const [editingCraft, setEditingCraft] = useState(false);
@@ -432,11 +434,40 @@ export const CraftDetailPage = () => {
 
         
 
-        <aside className="grid gap-4 lg:grid-cols-2">
+        <aside className="grid gap-4">
           <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-bold text-ghibli-deep">Share</h2>
 
-            <div className="mt-4 flex items-center justify-between gap-3">
+            {friends.length > 0 ? (
+              <div className="mt-4">
+                <p className="mb-2 text-sm font-semibold text-stone-700">Share with friends</p>
+                <ul className="space-y-2">
+                  {friends.map((friend) => {
+                    const isShared = craft.sharedWith?.includes(friend.toEmail) ?? false;
+                    return (
+                      <li key={friend.id} className="flex items-center justify-between">
+                        <span className="truncate text-sm text-stone-700">{friend.toEmail}</span>
+                        <button
+                          className={`ml-3 shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${isShared ? 'bg-ghibli-forest text-white hover:bg-ghibli-deep' : 'border border-stone-300 text-stone-700 hover:bg-ghibli-light'}`}
+                          type="button"
+                          onClick={() => {
+                            const current = craft.sharedWith ?? [];
+                            const next = isShared
+                              ? current.filter((e) => e !== friend.toEmail)
+                              : [...current, friend.toEmail];
+                            void updateSharedWith(craft.id, next);
+                          }}
+                        >
+                          {isShared ? 'Shared ✓' : 'Share'}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
+
+            <div className="mt-5 flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-stone-700">Public link</p>
                 <p className="text-xs text-stone-500">Anyone with the link can view</p>
