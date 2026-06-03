@@ -1,37 +1,69 @@
-# craft-app
+# Crafter
 
-Team Blue Client App — a personal craft tracker for saving inspiration, logging works in progress, and recording completed projects.
+**Built by Northwestern CS 394 Spring 2026 — Team Blue**
 
-**Live site:** [craft-app-bbf84.web.app](https://craft-app-bbf84.web.app/)
+A personal craft tracker for saving inspiration, logging works in progress, and recording completed projects. Share your crafts publicly or with specific friends.
 
-## About
+**Live site:** [craft-app-bbf84.web.app](https://craft-app-bbf84.web.app/)  
+**GitHub:** [394-s26/craft-app](https://github.com/394-s26/craft-app)
 
-craft-app lets you organize your crafting life across three folders:
+---
 
-- **Inspiration** — save ideas from Instagram, Etsy, Pinterest, or anywhere else
-- **Work in Progress** — track active projects with photos, materials, and notes
-- **Completed** — a finished gallery of things you've made
+## What is it?
+
+Crafter helps you organize your crafting life across three stages:
+
+- **Inspiration** — save ideas from Instagram, Etsy, Pinterest, or anywhere. Attach a source URL, photos, and tags. Filter by tag on the Inspo page.
+- **Work in Progress** — track active projects with photos, materials list, progress percentage, and notes.
+- **Completed** — a finished gallery of things you've made.
+
+Additional features:
+- **Shopping list** — auto-generated from materials across all your active crafts
+- **Friends** — add friends by email to share crafts with them directly
+- **Sharing** — make any craft public (shareable link) or share privately with specific friends via email notification
+- **Public view** — unauthenticated users can view public crafts via `/public/:craftId`
+
+### Screenshot
+
+> Add a screenshot here: drag an image into this section in GitHub, or place a file at `screenshots/home.png` and update the path below.
+
+```
+![Crafter homepage](screenshots/home.png)
+```
+
+---
 
 ## Tech stack
 
-- React 19 + TypeScript
-- Vite + Tailwind CSS v4
-- Firebase Auth (Google sign-in)
-- Firebase Firestore — craft data
-- Firebase Storage — photo uploads
-- Firebase Hosting
-- Vitest + Testing Library for unit testing
+| Layer | Technology |
+|---|---|
+| Frontend | React 19 + TypeScript |
+| Build | Vite 8 + Tailwind CSS v4 |
+| Auth | Firebase Auth (Google sign-in) |
+| Database | Firebase Firestore |
+| File storage | Firebase Storage |
+| Hosting | Firebase Hosting |
+| Email | Firebase Extensions — Trigger Email (via `mail` collection) |
+| Icons | Lucide React |
+| Images | libheif-js (HEIC/iPhone photo conversion) |
+| Tests | Vitest + Testing Library |
+
+---
 
 ## Local development
 
-Requires Node 22+ and the Firebase CLI.
+**Prerequisites:** Node 22+, npm, Firebase CLI
 
 ```bash
 npm install
 npm run dev
 ```
 
-Create a `.env` file in the project root with your Firebase config:
+The app runs at `http://localhost:5173`.
+
+### Environment variables
+
+Create a `.env` file in the project root. All variables are required:
 
 ```
 VITE_FIREBASE_API_KEY=...
@@ -42,46 +74,132 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=...
 VITE_FIREBASE_APP_ID=...
 ```
 
+Get these values from the Firebase Console → Project Settings → Your apps → Web app → SDK setup and configuration.
+
+### No seed data required
+
+The app works with an empty Firestore database. Users sign in with Google and start creating crafts immediately.
+
+---
+
 ## Firebase setup
 
-### First-time setup
+### 1. Create a Firebase project
 
-1. **Install the Firebase CLI and log in**
+1. Go to [console.firebase.google.com](https://console.firebase.google.com) and click **Add project**.
+2. Follow the wizard. You don't need Google Analytics.
+3. In **Project Settings → General**, scroll to **Your apps**, click the web icon (`</>`), register the app, and copy the config values into your `.env` file.
 
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   ```
+### 2. Enable authentication
 
-2. **Enable Firestore and Storage** in the [Firebase Console](https://console.firebase.google.com) for your project.
+1. In the Firebase Console, go to **Build → Authentication → Sign-in method**.
+2. Enable **Google** as a sign-in provider.
+3. Add your domain (e.g. `localhost`, your Hosting URL) to the **Authorized domains** list.
 
-3. **Set Storage security rules** — in the Firebase Console under Storage → Rules:
+### 3. Enable Firestore
 
-   ```
-   rules_version = '2';
-   service firebase.storage {
-     match /b/{bucket}/o {
-       match /users/{userId}/{allPaths=**} {
-         allow read, write: if request.auth != null && request.auth.uid == userId;
-       }
-     }
-   }
-   ```
+1. Go to **Build → Firestore Database → Create database**.
+2. Start in **production mode** (the security rules in `firestore.rules` handle access control).
+3. Choose any region.
 
-### Deploy to production
+Security rules are deployed automatically with `firebase deploy`. The rules allow:
+- Public crafts to be read without authentication
+- Crafts to be read/written only by their owner or people they've been shared with
+- Friendships to be managed only by the involved users
+
+### 4. Enable Storage
+
+1. Go to **Build → Storage → Get started**.
+2. Start in production mode and choose a region matching Firestore.
+3. Set these Storage security rules in **Storage → Rules**:
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+### 5. Enable email (Trigger Email extension)
+
+Sharing a craft with a friend sends an email notification via the Firebase **Trigger Email** extension, which watches the `mail` Firestore collection.
+
+1. In the Firebase Console, go to **Extensions → Explore extensions**.
+2. Search for **Trigger Email** and click **Install**.
+3. During setup, provide an SMTP connection string. For development, [Mailtrap](https://mailtrap.io) or [Resend](https://resend.com) both work well.
+4. Set the **Email documents collection** to `mail`.
+5. No code changes are needed — the app already writes to the `mail` collection.
+
+### 6. Install the Firebase CLI and deploy
 
 ```bash
+npm install -g firebase-tools
+firebase login
 npm run build
 firebase deploy --project <your-project-id>
 ```
+
+To switch between projects:
+
+```bash
+firebase use <project-id>
+firebase deploy
+```
+
+---
 
 ## Scripts
 
 | Script | Description |
 |---|---|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | TypeScript check + production build |
-| `npm run preview` | Preview production build |
-| `npm test` | Run tests with UI |
-| `npm run coverage` | Run tests with coverage |
-| `firebase deploy` | Deploy hosting to production |
+| `npm run dev` | Start Vite dev server at localhost:5173 |
+| `npm run build` | TypeScript check + production build to `dist/` |
+| `npm run preview` | Preview the production build locally |
+| `npm test` | Run tests with Vitest UI |
+| `npm run coverage` | Run tests with coverage report |
+| `firebase deploy --project <id>` | Deploy hosting + Firestore rules to production |
+
+---
+
+## Data model
+
+### Craft
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | string | Firestore document ID |
+| `userId` | string | Owner's Firebase Auth UID |
+| `title` | string | Craft name |
+| `description` | string | Notes / details |
+| `status` | `'inspiration' \| 'work-in-progress' \| 'completed'` | Current stage |
+| `materials` | string[] | List of materials |
+| `photos` | `{id, url, alt}[]` | Uploaded photos (Firebase Storage URLs) |
+| `progress` | number | Completion percentage (0–100) |
+| `isPublic` | boolean | Whether the craft is publicly viewable |
+| `sharedWith` | string[] | Emails of users with private access |
+| `tags` | string[] | Tags for filtering (inspiration only) |
+| `sourceUrl` | string? | Original inspiration URL (legacy field) |
+| `sources` | CraftSource[] | Structured sources (external URL or linked craft) |
+| `createdAt` | string | ISO timestamp |
+| `updatedAt` | string | ISO timestamp |
+
+### Friendship
+
+| Field | Type | Description |
+|---|---|---|
+| `fromUserId` | string | UID of the user who added the friend |
+| `toEmail` | string | Email of the friend |
+
+---
+
+## Known bugs
+
+- **Stale `sourceUrl` field** — older craft documents may have a `sourceUrl` string field instead of the newer `sources` array. The app reads both formats, but saving an old craft with an empty `sourceUrl` can cause a Firestore write error if not stripped (fixed in `craftService.ts` — but existing documents may still have the field).
+- **HEIC conversion on Chrome (Windows/Linux)** — HEIC conversion relies on `libheif-js` wasm, which adds ~1.5 MB to the bundle. Conversion may be slow or fail on low-memory devices.
+- **Shopping list deduplication** — materials with slightly different casing or spacing (e.g. "Yarn" vs "yarn") are treated as separate items.
+- **Friend emails are case-sensitive** — `Friend@Email.com` and `friend@email.com` are treated as different users. Emails should be lowercased on entry (partially enforced in the email share form but not the friend invite form).
+- **No offline support** — the app requires an active internet connection; there is no caching or offline fallback.
