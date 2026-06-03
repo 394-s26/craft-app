@@ -1,4 +1,4 @@
-import { Github } from 'lucide-react';
+import { GitFork } from 'lucide-react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthGate } from './components/AuthGate';
 import { NavBar } from './components/NavBar';
@@ -50,7 +50,7 @@ export const App = () => (
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 hover:text-ghibli-deep transition-colors align-bottom"
                     >
-                      <Github size={14} />
+                      <GitFork size={14} />
                       GitHub
                     </a>
                   </footer>

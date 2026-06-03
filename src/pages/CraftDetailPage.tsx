@@ -450,12 +450,18 @@ export const CraftDetailPage = () => {
                         <button
                           className={`ml-3 shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${isShared ? 'bg-ghibli-forest text-white hover:bg-ghibli-deep' : 'border border-stone-300 text-stone-700 hover:bg-ghibli-light'}`}
                           type="button"
-                          onClick={() => {
+                          onClick={async () => {
                             const current = craft.sharedWith ?? [];
                             const next = isShared
                               ? current.filter((e) => e !== friend.toEmail)
                               : [...current, friend.toEmail];
-                            void updateSharedWith(craft.id, next);
+                            await updateSharedWith(craft.id, next);
+                            if (!isShared) {
+                              const fromName = user?.displayName ?? user?.email ?? 'Someone';
+                              const fromEmail = user?.email ?? '';
+                              const craftUrl = `${window.location.origin}/public/${craft.id}`;
+                              await sendCraftShareEmail(fromName, fromEmail, friend.toEmail, craft.title, craftUrl);
+                            }
                           }}
                         >
                           {isShared ? 'Shared ✓' : 'Share'}
