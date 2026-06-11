@@ -25,11 +25,7 @@ Additional features:
 
 ### Screenshot
 
-> Add a screenshot here: drag an image into this section in GitHub, or place a file at `screenshots/home.png` and update the path below.
-
-```
 ![Crafter homepage](screenshots/home.png)
-```
 
 ---
 
